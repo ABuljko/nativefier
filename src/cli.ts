@@ -441,21 +441,6 @@ export function initArgs(argv: string[]): yargs.Argv<RawOptions> {
       ],
       decorateYargOptionGroup('(In)Security Options'),
     )
-    // Flash Options (DEPRECATED)
-    .option('flash', {
-      default: false,
-      deprecated: true,
-      description: 'enable Adobe Flash',
-      hidden: true,
-      type: 'boolean',
-    })
-    .option('flash-path', {
-      deprecated: true,
-      description: 'path to Chrome flash plugin; find it in `chrome://plugins`',
-      hidden: true,
-      normalize: true,
-      type: 'string',
-    })
     // Platform Specific Options
     .option('app-copyright', {
       description:

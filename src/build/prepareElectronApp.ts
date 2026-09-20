@@ -50,7 +50,6 @@ function pickElectronAppArgs(options: AppOptions): OutputOptions {
     executableName: options.packager.executableName,
     fastQuit: options.nativefier.fastQuit,
     fileDownloadOptions: options.nativefier.fileDownloadOptions,
-    flashPluginDir: options.nativefier.flashPluginDir,
     fullScreen: options.nativefier.fullScreen,
     globalShortcuts: options.nativefier.globalShortcuts,
     height: options.nativefier.height,

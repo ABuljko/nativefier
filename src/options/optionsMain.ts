@@ -87,7 +87,6 @@ export async function getOptions(rawOptions: RawOptions): Promise<AppOptions> {
       enableEs3Apis: rawOptions.enableEs3Apis ?? false,
       fastQuit: rawOptions.fastQuit ?? false,
       fileDownloadOptions: rawOptions.fileDownloadOptions,
-      flashPluginDir: rawOptions.flashPath,
       fullScreen: rawOptions.fullScreen ?? false,
       globalShortcuts: undefined,
       hideWindowFrame: rawOptions.hideWindowFrame ?? false,
@@ -196,10 +195,6 @@ export async function getOptions(rawOptions: RawOptions): Promise<AppOptions> {
           : DEFAULT_ELECTRON_VERSION
       }`,
     );
-  }
-
-  if (options.nativefier.flashPluginDir) {
-    options.nativefier.insecure = true;
   }
 
   if (options.nativefier.userAgentHonest && options.nativefier.userAgent) {

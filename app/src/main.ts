@@ -29,7 +29,6 @@ import {
   isWindows,
   removeUserAgentSpecifics,
 } from './helpers/helpers';
-import { inferFlashPath } from './helpers/inferFlash';
 import * as log from './helpers/loggingHelper';
 import {
   IS_PLAYWRIGHT,
@@ -137,13 +136,6 @@ if (appArgs.processEnvs) {
     .forEach((key) => {
       process.env[key] = processEnvs[key];
     });
-}
-
-if (typeof appArgs.flashPluginDir === 'string') {
-  app.commandLine.appendSwitch('ppapi-flash-path', appArgs.flashPluginDir);
-} else if (appArgs.flashPluginDir) {
-  const flashPath = inferFlashPath();
-  app.commandLine.appendSwitch('ppapi-flash-path', flashPath);
 }
 
 if (appArgs.ignoreCertificate) {
