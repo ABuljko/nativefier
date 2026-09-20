@@ -327,10 +327,9 @@ app.on(
     if (appArgs.basicAuthUsername && appArgs.basicAuthPassword) {
       callback(appArgs.basicAuthUsername, appArgs.basicAuthPassword);
     } else {
-      createLoginWindow(
-        callback,
-        // mainWindow
-      ).catch((err) => log.error('createLoginWindow ERROR', err));
+      createLoginWindow(callback).catch((err) =>
+        log.error('createLoginWindow ERROR', err),
+      );
     }
   },
 );

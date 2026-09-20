@@ -31,17 +31,6 @@ export function parseBoolean(
   }
 }
 
-export function parseBooleanOrString(val: string): boolean | string {
-  switch (val) {
-    case 'true':
-      return true;
-    case 'false':
-      return false;
-    default:
-      return val;
-  }
-}
-
 export function parseJson<Type>(val: string): Type | undefined {
   if (!val) return undefined;
   try {

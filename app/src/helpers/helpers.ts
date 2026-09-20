@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { BrowserWindow, OpenExternalOptions, shell } from 'electron';
+import { OpenExternalOptions, shell } from 'electron';
 
 import * as log from '../helpers/loggingHelper';
 import { showNavigationBlockedMessage } from './windowHelpers';
@@ -99,17 +99,6 @@ function isUrlShellSafe(
   }
 
   return { blocked: false };
-}
-
-/**
- * Helper to print debug messages from the main process in the browser window
- */
-export function debugLog(browserWindow: BrowserWindow, message: string): void {
-  // Need a delay, as it takes time for the preloaded js to be loaded by the window
-  setTimeout(() => {
-    browserWindow.webContents.send('debug', message);
-  }, 3000);
-  log.debug(message);
 }
 
 /**

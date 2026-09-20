@@ -52,7 +52,6 @@ describe('clearAppData', () => {
 });
 
 describe('createNewTab', () => {
-  // const window = new BrowserWindow();
   const options: WindowOptions = {
     autoHideMenuBar: true,
     blockExternalUrls: false,
