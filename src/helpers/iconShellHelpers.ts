@@ -5,7 +5,6 @@ import { isWindows, isOSX, getTempDir } from './helpers';
 import * as log from 'loglevel';
 
 const SCRIPT_PATHS = {
-  singleIco: path.join(__dirname, '../..', 'icon-scripts/singleIco'),
   convertToPng: path.join(__dirname, '../..', 'icon-scripts/convertToPng'),
   convertToIco: path.join(__dirname, '../..', 'icon-scripts/convertToIco'),
   convertToIcns: path.join(__dirname, '../..', 'icon-scripts/convertToIcns'),
@@ -49,14 +48,6 @@ function iconShellHelper(
   }
   log.debug(`Conversion succeeded and produced icon at ${icoDestination}`);
   return icoDestination;
-}
-
-export function singleIco(icoSrc: string): string {
-  return iconShellHelper(
-    SCRIPT_PATHS.singleIco,
-    icoSrc,
-    `${getTempDir('iconconv')}/icon.ico`,
-  );
 }
 
 export function convertToPng(icoSrc: string): string {

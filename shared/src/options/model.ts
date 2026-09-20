@@ -39,7 +39,6 @@ export interface AppOptions {
     enableEs3Apis: boolean;
     fastQuit: boolean;
     fileDownloadOptions?: Record<string, unknown>;
-    flashPluginDir?: string;
     fullScreen: boolean;
     globalShortcuts?: GlobalShortcut[];
     hideWindowFrame: boolean;
@@ -156,8 +155,6 @@ export type RawOptions = {
   enableEs3Apis?: boolean;
   fastQuit?: boolean;
   fileDownloadOptions?: Record<string, unknown>;
-  flashPath?: string;
-  flashPluginDir?: string;
   fullScreen?: boolean;
   globalShortcuts?: string | GlobalShortcut[];
   height?: number;

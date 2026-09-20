@@ -61,15 +61,9 @@ export function onNewWindowHelper(
       if (options.blockExternalUrls) {
         showNavigationBlockedMessage(
           `Navigation to external URL blocked by options: ${details.url}`,
-        )
-          .then(() => {
-            // blockExternalURL(details.url).then(resolve).catch((err: unknown) => {
-            //   log.error('blockExternalURL', err);
-            // });
-          })
-          .catch((err: unknown) => {
-            throw err;
-          });
+        ).catch((err: unknown) => {
+          throw err;
+        });
         return { action: 'deny' };
       } else {
         openExternal(details.url).catch((err: unknown) => {
@@ -100,7 +94,7 @@ export function onNewWindowHelper(
       return { action: 'deny' };
     }
     return { action: 'allow' };
-  } catch (err: unknown) {
+  } catch {
     return { action: 'deny' };
   }
 }

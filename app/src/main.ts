@@ -12,6 +12,9 @@ import electron, {
   Event,
 } from 'electron';
 import electronDownload from 'electron-dl';
+// Entrypoint for Squirrel, a windows update framework
+// https://github.com/nativefier/nativefier/pull/744
+import startedBySquirrel from 'electron-squirrel-startup';
 
 import { createLoginWindow } from './components/loginWindow';
 import {
@@ -26,7 +29,6 @@ import {
   isWindows,
   removeUserAgentSpecifics,
 } from './helpers/helpers';
-import { inferFlashPath } from './helpers/inferFlash';
 import * as log from './helpers/loggingHelper';
 import {
   IS_PLAYWRIGHT,
@@ -35,12 +37,11 @@ import {
 } from './helpers/playwrightHelpers';
 import { OutputOptions } from '../../shared/src/options/model';
 
-// Entrypoint for Squirrel, a windows update framework. See https://github.com/nativefier/nativefier/pull/744
-if (require('electron-squirrel-startup')) {
+if (startedBySquirrel) {
   app.exit();
 }
 
-if (process.argv.indexOf('--verbose') > -1 || safeGetEnv('VERBOSE') === '1') {
+if (process.argv.includes('--verbose') || safeGetEnv('VERBOSE') === '1') {
   log.setLevel('DEBUG');
   process.traceDeprecation = true;
   process.traceProcessWarnings = true;
@@ -135,13 +136,6 @@ if (appArgs.processEnvs) {
     .forEach((key) => {
       process.env[key] = processEnvs[key];
     });
-}
-
-if (typeof appArgs.flashPluginDir === 'string') {
-  app.commandLine.appendSwitch('ppapi-flash-path', appArgs.flashPluginDir);
-} else if (appArgs.flashPluginDir) {
-  const flashPath = inferFlashPath();
-  app.commandLine.appendSwitch('ppapi-flash-path', flashPath);
 }
 
 if (appArgs.ignoreCertificate) {
@@ -333,10 +327,9 @@ app.on(
     if (appArgs.basicAuthUsername && appArgs.basicAuthPassword) {
       callback(appArgs.basicAuthUsername, appArgs.basicAuthPassword);
     } else {
-      createLoginWindow(
-        callback,
-        // mainWindow
-      ).catch((err) => log.error('createLoginWindow ERROR', err));
+      createLoginWindow(callback).catch((err) =>
+        log.error('createLoginWindow ERROR', err),
+      );
     }
   },
 );

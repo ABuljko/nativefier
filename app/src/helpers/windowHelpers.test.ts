@@ -52,7 +52,6 @@ describe('clearAppData', () => {
 });
 
 describe('createNewTab', () => {
-  // const window = new BrowserWindow();
   const options: WindowOptions = {
     autoHideMenuBar: true,
     blockExternalUrls: false,
@@ -60,7 +59,7 @@ describe('createNewTab', () => {
     name: 'Test App',
     targetUrl: 'https://github.com/nativefier/natifefier',
     zoom: 1.0,
-  } as WindowOptions;
+  };
   const setupWindow = jest.fn();
   const url = 'https://github.com/nativefier/nativefier';
   const mockAddTabbedWindow: jest.SpyInstance = jest.spyOn(

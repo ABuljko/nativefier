@@ -27,7 +27,7 @@ function extractRaw(
   // This would be easier with xml2js, but let's not add a dependency for something this minor.
   const fullKey = `\n    <key>${plistKey}</key>`;
 
-  if (infoPlistXML.indexOf(fullKey) === -1) {
+  if (!infoPlistXML.includes(fullKey)) {
     // This value wasn't set, so we'll stay agnostic to it
     return undefined;
   }

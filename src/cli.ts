@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
-import electronPackager = require('electron-packager');
+import debug from 'debug';
+import electronPackager from 'electron-packager';
 import * as log from 'loglevel';
 import yargs from 'yargs';
 
@@ -440,21 +441,6 @@ export function initArgs(argv: string[]): yargs.Argv<RawOptions> {
       ],
       decorateYargOptionGroup('(In)Security Options'),
     )
-    // Flash Options (DEPRECATED)
-    .option('flash', {
-      default: false,
-      deprecated: true,
-      description: 'enable Adobe Flash',
-      hidden: true,
-      type: 'boolean',
-    })
-    .option('flash-path', {
-      deprecated: true,
-      description: 'path to Chrome flash plugin; find it in `chrome://plugins`',
-      hidden: true,
-      normalize: true,
-      type: 'string',
-    })
     // Platform Specific Options
     .option('app-copyright', {
       description:
@@ -546,7 +532,7 @@ export function initArgs(argv: string[]): yargs.Argv<RawOptions> {
 
   // We must access argv in order to get yargs to actually process args
   // Do this now to go ahead and get any errors out of the way
-  args.argv as YargsArgvSync<RawOptions>;
+  void args.argv;
 
   return args as yargs.Argv<RawOptions>;
 }
@@ -674,9 +660,8 @@ if (require.main === module) {
   if (options.verbose) {
     log.setLevel('trace');
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      require('debug').enable('electron-packager');
-    } catch (err: unknown) {
+      debug.enable('electron-packager');
+    } catch {
       log.debug(
         'Failed to enable electron-packager debug output. This should not happen,',
         'and suggests their internals changed. Please report an issue.',

@@ -35,7 +35,7 @@ export function getVersionString(
   try {
     const child = spawnSync(rcedit, args, spawnOptions);
     const result = child.output?.toString().split(',wine: ')[0];
-    return result.startsWith(',') ? result.substr(1) : result;
+    return result.startsWith(',') ? result.slice(1) : result;
   } catch {
     return undefined;
   }

@@ -4,10 +4,10 @@ module.exports = {
   plugins: ['@typescript-eslint', 'prettier'],
   extends: [
     'eslint:recommended',
-    'prettier',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:@typescript-eslint/recommended-type-checked',
+    'prettier',
   ],
   rules: {
     'no-console': 'error',
@@ -22,8 +22,6 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/no-extraneous-class': 'error',
     '@typescript-eslint/no-invalid-void-type': 'error',
-    '@typescript-eslint/prefer-ts-expect-error': 'error',
-    '@typescript-eslint/type-annotation-spacing': 'error',
     '@typescript-eslint/typedef': 'error',
     '@typescript-eslint/unified-signatures': 'error',
   },

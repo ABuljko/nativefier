@@ -17,7 +17,7 @@ import { randomUUID } from 'crypto';
 
 const ZOOM_INTERVAL = 0.1;
 
-export function adjustWindowZoom(adjustment: number): void {
+function adjustWindowZoom(adjustment: number): void {
   withFocusedWindow((focusedWindow: BrowserWindow) => {
     focusedWindow.webContents.zoomFactor =
       focusedWindow.webContents.zoomFactor + adjustment;
@@ -35,10 +35,7 @@ export function showNavigationBlockedMessage(
           type: 'error',
           title: 'Navigation blocked',
         })
-        .then((result) => resolve(result))
-        .catch((err) => {
-          reject(err);
-        });
+        .then(resolve, reject);
     });
   });
 }
@@ -336,7 +333,7 @@ export function setProxyRules(
     .catch((err) => log.error('session.setProxy ERROR', err));
 }
 
-export function withFocusedWindow<T>(
+function withFocusedWindow<T>(
   block: (window: BrowserWindow) => T,
 ): T | undefined {
   const focusedWindow = BrowserWindow.getFocusedWindow();

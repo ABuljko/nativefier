@@ -117,7 +117,6 @@ describe('initArgs + parseArgs', () => {
       value: '{"test": 789}',
       isJsonString: true,
     },
-    { arg: 'flash-path', shortArg: '', value: 'pathToFlash' },
     { arg: 'global-shortcuts', shortArg: '', value: 'shortcuts.json' },
     { arg: 'icon', shortArg: 'i', value: 'icon.png' },
     { arg: 'internal-urls', shortArg: '', value: '.*' },
@@ -210,7 +209,6 @@ describe('initArgs + parseArgs', () => {
     { arg: 'disable-old-build-warning-yesiknowitisinsecure', shortArg: '' },
     { arg: 'enable-es3-apis', shortArg: '' },
     { arg: 'fast-quit', shortArg: 'f' },
-    { arg: 'flash', shortArg: '' },
     { arg: 'full-screen', shortArg: '' },
     { arg: 'hide-window-frame', shortArg: '' },
     { arg: 'honest', shortArg: '' },
@@ -245,7 +243,7 @@ describe('initArgs + parseArgs', () => {
   test.each([{ arg: 'no-overwrite', shortArg: '' }])(
     'test inversible boolean arg %s',
     ({ arg, shortArg }) => {
-      const inverse = arg.startsWith('no-') ? arg.substr(3) : `no-${arg}`;
+      const inverse = arg.startsWith('no-') ? arg.slice(3) : `no-${arg}`;
 
       const defaultArgs = parseArgs(
         initArgs(['https://google.com']),

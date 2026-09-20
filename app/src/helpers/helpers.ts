@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { BrowserWindow, OpenExternalOptions, shell } from 'electron';
+import { OpenExternalOptions, shell } from 'electron';
 
 import * as log from '../helpers/loggingHelper';
 import { showNavigationBlockedMessage } from './windowHelpers';
@@ -64,13 +64,13 @@ const SHELL_SAFETY_FEEDBACK_STR =
   'If you believe this URL should open, you might be right, and our validation might be excessive.' +
   'Please share this error & URL at https://github.com/nativefier/nativefier/issues/1459';
 
-export function isUrlShellSafe(
+function isUrlShellSafe(
   urlToGo: string,
 ): { blocked: false } | { blocked: true; reason: string } {
   let url: URL;
   try {
     url = new URL(urlToGo.toLowerCase());
-  } catch (err: unknown) {
+  } catch {
     return {
       blocked: true,
       reason: `URL appears malformed. ${SHELL_SAFETY_FEEDBACK_STR}`,
@@ -99,17 +99,6 @@ export function isUrlShellSafe(
   }
 
   return { blocked: false };
-}
-
-/**
- * Helper to print debug messages from the main process in the browser window
- */
-export function debugLog(browserWindow: BrowserWindow, message: string): void {
-  // Need a delay, as it takes time for the preloaded js to be loaded by the window
-  setTimeout(() => {
-    browserWindow.webContents.send('debug', message);
-  }, 3000);
-  log.debug(message);
 }
 
 /**

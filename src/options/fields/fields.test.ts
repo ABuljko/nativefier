@@ -26,7 +26,6 @@ describe('fields', () => {
         enableEs3Apis: false,
         fastQuit: true,
         fileDownloadOptions: undefined,
-        flashPluginDir: undefined,
         fullScreen: false,
         globalShortcuts: undefined,
         height: undefined,

@@ -188,7 +188,7 @@ export function getProcessEnvs(val: string): ProcessEnvs | undefined {
 
 export function checkInternet(): void {
   dns.lookup('npmjs.com', (err) => {
-    if (err && err.code === 'ENOTFOUND') {
+    if (err?.code === 'ENOTFOUND') {
       log.warn(
         '\nNo Internet Connection\nTo offline build, download electron from https://github.com/electron/electron/releases\nand place in ~/AppData/Local/electron/Cache/ on Windows,\n~/.cache/electron on Linux or ~/Library/Caches/electron/ on Mac\nUse --electron-version to specify the version you downloaded.',
       );
