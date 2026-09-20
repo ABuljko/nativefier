@@ -1,4 +1,6 @@
 import * as fs from 'fs';
+import * as http from 'http';
+import { AddressInfo } from 'net';
 import * as path from 'path';
 
 import { Shell } from 'electron';
@@ -15,6 +17,22 @@ import { NativefierOptions } from '../shared/src/options/model';
 const INJECT_DIR = path.join(__dirname, '..', 'app', 'inject');
 
 const log = console;
+
+const FIXTURE_TITLE = 'Nativefier Test Page';
+const FIXTURE_SECOND_PATH = '/second';
+const FIXTURE_EXTERNAL_URL = 'https://example.com/';
+
+function fixturePage(isSecondPage: boolean): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+  <head><title>${FIXTURE_TITLE}</title></head>
+  <body>
+    <header>${isSecondPage ? 'Second' : 'First'} page</header>
+    <a id="internal-link" href="${FIXTURE_SECOND_PATH}">Internal</a>
+    <a id="external-link" href="${FIXTURE_EXTERNAL_URL}">External</a>
+  </body>
+</html>`;
+}
 
 function sleep(milliseconds: number): Promise<void> {
   return new Promise((resolve) => {
@@ -33,9 +51,12 @@ describe('Application launch', () => {
   let appClosed = true;
 
   const appMainJSPath = path.join(__dirname, '..', 'app', 'lib', 'main.js');
+  // Served locally, so these tests don't break when a third party restyles its
+  // pages or puts them behind a bot check. Real URL assigned in beforeAll.
   const DEFAULT_CONFIG: NativefierOptions = {
-    targetUrl: 'https://npmjs.com',
+    targetUrl: '',
   };
+  let fixtureServer: http.Server;
 
   const logFileDir = getTempDir('playwright');
 
@@ -128,6 +149,24 @@ describe('Application launch', () => {
     return window;
   };
 
+  beforeAll(async () => {
+    fixtureServer = http.createServer((req, res) => {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(fixturePage(req.url === FIXTURE_SECOND_PATH));
+    });
+    await new Promise<void>((resolve) => {
+      fixtureServer.listen(0, '127.0.0.1', () => resolve());
+    });
+    const { port } = fixtureServer.address() as AddressInfo;
+    DEFAULT_CONFIG.targetUrl = `http://127.0.0.1:${port}/`;
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve, reject) => {
+      fixtureServer.close((err) => (err ? reject(err) : resolve()));
+    });
+  });
+
   beforeEach(() => {
     nukeInjects();
     nukeLogs(logFileDir);
@@ -146,7 +185,7 @@ describe('Application launch', () => {
     const mainWindow = (await spawnApp()) as Page;
     await mainWindow.waitForLoadState('domcontentloaded');
     expect(app.windows()).toHaveLength(1);
-    expect(await mainWindow.title()).toBe('npm');
+    expect(await mainWindow.title()).toBe(FIXTURE_TITLE);
   });
 
   test('can inject some CSS', async () => {
@@ -162,7 +201,7 @@ describe('Application launch', () => {
     );
     expect(headerStyle.backgroundColor).toBe(fuschia);
 
-    await mainWindow.click('#nav-pricing-link');
+    await mainWindow.click('#internal-link');
     await mainWindow.waitForLoadState('domcontentloaded');
     const headerStylePostNavigate = await mainWindow.$eval('header', (el) =>
       window.getComputedStyle(el),
@@ -189,7 +228,7 @@ describe('Application launch', () => {
   test('can open internal links', async () => {
     const mainWindow = (await spawnApp()) as Page;
     await mainWindow.waitForLoadState('domcontentloaded');
-    await mainWindow.click('#nav-pricing-link');
+    await mainWindow.click('#internal-link');
     await mainWindow.waitForLoadState('domcontentloaded');
     expect(app.windows()).toHaveLength(1);
   });
@@ -212,15 +251,13 @@ describe('Application launch', () => {
     });
 
     // Click, but don't await it - Playwright waits for stuff that does not happen when Electron does openExternal.
-    mainWindow
-      .click('#footer > div:nth-child(2) > ul > li:nth-child(2) > a')
-      .catch((err: unknown) => {
-        expect(err).toBeUndefined();
-      });
+    mainWindow.click('#external-link').catch((err: unknown) => {
+      expect(err).toBeUndefined();
+    });
 
     // Go pull out our value returned by our hacky global promise
     const openExternalUrl = await app.evaluate('process.openExternalPromise');
-    expect(openExternalUrl).not.toBe('https://www.npmjs.com/');
+    expect(openExternalUrl).toBe(FIXTURE_EXTERNAL_URL);
 
     expect(openExternalUrl).not.toBe(DEFAULT_CONFIG.targetUrl);
   });
@@ -270,7 +307,7 @@ describe('Application launch', () => {
     await mainWindow.waitForLoadState('domcontentloaded');
 
     await Promise.all([
-      mainWindow.click('#nav-pricing-link'),
+      mainWindow.click('#internal-link'),
       mainWindow.waitForNavigation({ waitUntil: 'domcontentloaded' }),
     ]);
 
