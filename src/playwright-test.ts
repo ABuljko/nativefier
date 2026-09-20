@@ -1,4 +1,3 @@
-import { once } from 'events';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -6,7 +5,6 @@ import { Shell } from 'electron';
 import {
   _electron,
   ConsoleMessage,
-  Dialog,
   ElectronApplication,
   Page,
 } from 'playwright';
@@ -183,12 +181,7 @@ describe('Application launch', () => {
       true,
       true,
     )) as Page;
-    const [dialogPromise] = (await once(
-      mainWindow,
-      'dialog',
-    )) as unknown as Promise<Dialog>[];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const dialog: Dialog = await dialogPromise;
+    const dialog = await mainWindow.waitForEvent('dialog');
     await dialog.dismiss();
     expect(dialog.message()).toBe(alertMsg);
   });
