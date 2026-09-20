@@ -3,10 +3,10 @@ name: ci
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 # - Bumping the *minimum* required Node version? You must bump:
 #   1. package.json -> engines.node
