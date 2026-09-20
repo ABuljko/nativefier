@@ -22,11 +22,13 @@ async function checkApp(
   inputOptions: RawOptions,
 ): Promise<void> {
   const arch = inputOptions.arch ? inputOptions.arch : inferArch();
+  expect(inputOptions.name).toBeDefined();
+  const appName = inputOptions.name as string;
   if (inputOptions.out !== undefined) {
     expect(
       path.join(
         inputOptions.out,
-        `npm-${inputOptions.platform as string}-${arch}`,
+        `${appName}-${inputOptions.platform as string}-${arch}`,
       ),
     ).toBe(appRoot);
   }
@@ -34,7 +36,7 @@ async function checkApp(
   let relativeResourcesDir = 'resources';
 
   if (inputOptions.platform === 'darwin') {
-    relativeResourcesDir = path.join('npm.app', 'Contents', 'Resources');
+    relativeResourcesDir = path.join(`${appName}.app`, 'Contents', 'Resources');
   }
 
   const appPath = path.join(appRoot, relativeResourcesDir, 'app');
@@ -46,8 +48,8 @@ async function checkApp(
 
   expect(inputOptions.targetUrl).toBe(nativefierConfig?.targetUrl);
 
-  // Test name inferring
-  expect(nativefierConfig?.name).toBe('npm');
+  // Test name passing
+  expect(nativefierConfig?.name).toBe(appName);
 
   // Test icon writing
   const iconFile =
@@ -115,10 +117,11 @@ describe('Nativefier', () => {
       const tempDirectory = getTempDir('integtest');
       const options: RawOptions = {
         lang: 'en-US',
+        name: 'github',
         out: tempDirectory,
         overwrite: true,
         platform,
-        targetUrl: 'https://npmjs.com/',
+        targetUrl: 'https://github.com/',
       };
       const appPath = await buildNativefierApp(options);
       expect(appPath).not.toBeUndefined();
@@ -175,9 +178,10 @@ describe('Nativefier upgrade', () => {
       const options: RawOptions = {
         electronVersion: '11.2.3',
         globalShortcuts: shortcuts,
+        name: 'github',
         out: tempDirectory,
         overwrite: true,
-        targetUrl: 'https://npmjs.com/',
+        targetUrl: 'https://github.com/',
         ...baseAppOptions,
       };
       const appPath = await buildNativefierApp(options);
