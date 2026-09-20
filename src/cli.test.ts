@@ -245,7 +245,7 @@ describe('initArgs + parseArgs', () => {
   test.each([{ arg: 'no-overwrite', shortArg: '' }])(
     'test inversible boolean arg %s',
     ({ arg, shortArg }) => {
-      const inverse = arg.startsWith('no-') ? arg.substr(3) : `no-${arg}`;
+      const inverse = arg.startsWith('no-') ? arg.slice(3) : `no-${arg}`;
 
       const defaultArgs = parseArgs(
         initArgs(['https://google.com']),

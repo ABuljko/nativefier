@@ -89,7 +89,7 @@ async function inferIconFromStore(
     allowedFormats.has(icon.ext ?? path.extname(icon.url as string)),
   );
   const matchingIcon = iconsMatchingExt[0];
-  const iconUrl = matchingIcon && matchingIcon.url;
+  const iconUrl = matchingIcon?.url;
 
   if (!iconUrl) {
     log.debug('Could not infer icon from store');

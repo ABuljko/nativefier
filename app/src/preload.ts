@@ -284,9 +284,7 @@ function setDisplayMediaPromise(): void {
             setupScreenSharePicker(resolve, reject, sources);
           }
         })
-        .catch((err) => {
-          reject(err);
-        });
+        .catch(reject);
     });
   };
 }
@@ -306,6 +304,7 @@ function injectScripts(): void {
       .map((jsFileStat) => path.join('..', 'inject', jsFileStat.name));
     for (const jsFile of jsFiles) {
       log.debug('Injecting JS file', jsFile);
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       require(jsFile);
     }
   } catch (err: unknown) {

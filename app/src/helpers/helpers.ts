@@ -64,13 +64,13 @@ const SHELL_SAFETY_FEEDBACK_STR =
   'If you believe this URL should open, you might be right, and our validation might be excessive.' +
   'Please share this error & URL at https://github.com/nativefier/nativefier/issues/1459';
 
-export function isUrlShellSafe(
+function isUrlShellSafe(
   urlToGo: string,
 ): { blocked: false } | { blocked: true; reason: string } {
   let url: URL;
   try {
     url = new URL(urlToGo.toLowerCase());
-  } catch (err: unknown) {
+  } catch {
     return {
       blocked: true,
       reason: `URL appears malformed. ${SHELL_SAFETY_FEEDBACK_STR}`,

@@ -12,6 +12,9 @@ import electron, {
   Event,
 } from 'electron';
 import electronDownload from 'electron-dl';
+// Entrypoint for Squirrel, a windows update framework
+// https://github.com/nativefier/nativefier/pull/744
+import startedBySquirrel from 'electron-squirrel-startup';
 
 import { createLoginWindow } from './components/loginWindow';
 import {
@@ -35,12 +38,11 @@ import {
 } from './helpers/playwrightHelpers';
 import { OutputOptions } from '../../shared/src/options/model';
 
-// Entrypoint for Squirrel, a windows update framework. See https://github.com/nativefier/nativefier/pull/744
-if (require('electron-squirrel-startup')) {
+if (startedBySquirrel) {
   app.exit();
 }
 
-if (process.argv.indexOf('--verbose') > -1 || safeGetEnv('VERBOSE') === '1') {
+if (process.argv.includes('--verbose') || safeGetEnv('VERBOSE') === '1') {
   log.setLevel('DEBUG');
   process.traceDeprecation = true;
   process.traceProcessWarnings = true;

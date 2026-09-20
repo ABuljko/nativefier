@@ -5,7 +5,7 @@
     "esModuleInterop": true,
     "incremental": true,
     "module": "commonjs",
-    "moduleResolution": "node",
+    "moduleResolution": "node10",
     "noImplicitAny": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,

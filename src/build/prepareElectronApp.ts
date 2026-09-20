@@ -122,7 +122,7 @@ async function maybeCopyScripts(
       );
     }
 
-    if (supportedInjectionExtensions.indexOf(path.extname(src)) < 0) {
+    if (!supportedInjectionExtensions.includes(path.extname(src))) {
       log.warn('Skipping unsupported injection file', src);
       continue;
     }
@@ -186,9 +186,10 @@ export async function prepareElectronApp(
   try {
     await fs.copy(src, dest);
   } catch (err: unknown) {
-    throw `Error copying electron app from ${src} to temp dir ${dest}. Error: ${
-      (err as Error).message
-    }`;
+    throw new Error(
+      `Error copying electron app from ${src} to temp dir ${dest}`,
+      { cause: err },
+    );
   }
 
   const appJsonPath = path.join(dest, '/nativefier.json');

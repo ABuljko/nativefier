@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
 import axios from 'axios';
-import * as debug from 'debug';
+import debug from 'debug';
 import * as log from 'loglevel';
 
 // package.json is `require`d to let tsc strip the `src` folder by determining
@@ -10,7 +10,7 @@ import * as log from 'loglevel';
 const packageJson: {
   name: string;
   version: string;
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
 } = require('../../package.json');
 import {
   DEFAULT_ELECTRON_VERSION,
@@ -58,8 +58,7 @@ export async function getOptions(rawOptions: RawOptions): Promise<AppOptions> {
       tmpdir: false, // workaround for electron-packager#375
       upgrade: rawOptions.upgrade !== undefined ? true : false,
       upgradeFrom:
-        (rawOptions.upgradeFrom as string) ??
-        ((rawOptions.upgrade as string) || undefined),
+        rawOptions.upgradeFrom ?? ((rawOptions.upgrade as string) || undefined),
       win32metadata: rawOptions.win32metadata ?? {
         ProductName: rawOptions.name,
         InternalName: rawOptions.name,
@@ -151,7 +150,9 @@ export async function getOptions(rawOptions: RawOptions): Promise<AppOptions> {
   if (options.packager.electronVersion) {
     const requestedVersion: string = options.packager.electronVersion;
     if (!SEMVER_VERSION_NUMBER_REGEX.exec(requestedVersion)) {
-      throw `Invalid Electron version number "${requestedVersion}". Aborting.`;
+      throw new Error(
+        `Invalid Electron version number "${requestedVersion}". Aborting.`,
+      );
     }
     const requestedMajorVersion = parseInt(requestedVersion.split('.')[0], 10);
     if (requestedMajorVersion < ELECTRON_MAJOR_VERSION) {

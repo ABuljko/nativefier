@@ -35,10 +35,7 @@ export function showNavigationBlockedMessage(
           type: 'error',
           title: 'Navigation blocked',
         })
-        .then((result) => resolve(result))
-        .catch((err) => {
-          reject(err);
-        });
+        .then(resolve, reject);
     });
   });
 }
