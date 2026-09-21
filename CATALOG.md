@@ -30,12 +30,12 @@ This allows the last set window size and position to be remembered and applied
 after your app is restarted. Note: PR welcome for a built-in fix for that :) .
 
 ```sh
-nativefier 'https://open.google.com/'
+nativefier 'https://example.com/' \
   --inject window.js
 ```
 
-Note: [Inject](https://github.com/nativefier/nativefier/blob/master/API.md#inject)
-the following javascript as `windows.js` to prevent the window size and position to reset.
+Note: [Inject](API.md#inject)
+the following javascript as `window.js` to prevent the window size and position to reset.
 ```javascript
 function storeWindowPos() {
   window.localStorage.setItem('windowX', window.screenX);
@@ -65,9 +65,9 @@ nativefier 'https://docs.google.com/spreadsheets' \
 ### Outlook
 
 ```sh
-nativefier 'https://outlook.office.com/mail'
-  --internal-urls '.*?(outlook.live.com|outlook.office365.com).*?'
-  --file-download-options '{"saveAs": true}'
+nativefier 'https://outlook.office.com/mail' \
+  --internal-urls '.*?(outlook.live.com|outlook.office365.com).*?' \
+  --file-download-options '{"saveAs": true}' \
   --browserwindow-options '{"webPreferences": { "webviewTag": true, "nodeIntegration": true, "nodeIntegrationInSubFrames": true } }'
 ```
 
@@ -76,9 +76,9 @@ Note: `--browserwindow-options` is needed to allow pop-outs when creating/editin
 ### Udemy
 
 ```sh
-nativefier 'https://www.udemy.com/'
-  --internal-urls '.*?udemy.*?'
-  --file-download-options '{"saveAs": true}'
+nativefier 'https://www.udemy.com/' \
+  --internal-urls '.*?udemy.*?' \
+  --file-download-options '{"saveAs": true}' \
   --widevine
 ```
 
@@ -87,10 +87,10 @@ Note: most videos will work, but to play some DRMed videos you must pass `--wide
 ### HBO Max
 
 ```sh
-nativefier 'https://play.hbomax.com/'
-  --widevine
-  --enable-es3-apis
-&& python -m castlabs_evs.vmp sign-pkg 'name_of_the_generated_hbo_app'
+nativefier 'https://play.hbomax.com/' \
+  --widevine \
+  --enable-es3-apis &&
+python -m castlabs_evs.vmp sign-pkg 'name_of_the_generated_hbo_app'
 ```
 
 Note: as for Udemy, `--widevine` + [app signing](https://github.com/nativefier/nativefier/issues/1147#issuecomment-828750362) is necessary.
@@ -98,7 +98,7 @@ Note: as for Udemy, `--widevine` + [app signing](https://github.com/nativefier/n
 ### WhatsApp
 
 ```sh
-nativefier 'https://web.whatsapp.com/'
+nativefier 'https://web.whatsapp.com/' \
   --inject whatsapp.js
 ```
 
@@ -117,7 +117,7 @@ if ('serviceWorker' in navigator) {
 Another option to see WhatsApp or WhatsApp Business more macOS-like (macos only):
 
 ```sh
-nativefier https://web.whatsapp.com --name 'WhatsApp Business' --counter true --darwin-dark-mode-support true --title-bar-style hidden --inject whatsappmacos.css
+nativefier https://web.whatsapp.com --name 'WhatsApp Business' --counter --darwin-dark-mode-support --title-bar-style hidden --inject whatsappmacos.css
 ```
 
 with this `whatsappmacos.css` to make the window draggable, and move the user avatar to the right:
@@ -140,16 +140,16 @@ div#app > div.os-mac > span:first-child {
 ### Spotify
 
 ```sh
-nativefier 'https://open.spotify.com/'
-  --widevine
-  --inject spotify.js
+nativefier 'https://open.spotify.com/' \
+  --widevine \
+  --inject spotify.js \
   --inject spotify.css
 ```
 
 Notes:
 
 - You might have to pass `--user-agent firefox` to circumvent Spotify's detection that your browser isn't a real Chrome. But [maybe not](https://github.com/nativefier/nativefier/issues/1195#issuecomment-855003776).
-- [Inject](https://github.com/nativefier/nativefier/blob/master/API.md#inject) the following javascript as `spotify.js` to prevent "Unsupported Browser" messages.
+- [Inject](API.md#inject) the following javascript as `spotify.js` to prevent "Unsupported Browser" messages.
 
 ```javascript
 function dontShowBrowserNoticePage() {
@@ -186,7 +186,7 @@ function nukeWorkers() {
             reload();
           })
           .catch((e) =>
-            console.error('Unable to unregister worker', error, { worker }),
+            console.error('Unable to unregister worker', e, { worker }),
           ),
       );
     });
@@ -202,8 +202,8 @@ if (document.readyState === 'interactive') {
 }
 ```
 
-- It is also required to [sign the app](https://github.com/nativefier/nativefier/blob/master/API.md#widevine), or many songs will not play.
-- To hide all download links (as if you were in the actual app), [inject](https://github.com/nativefier/nativefier/blob/master/API.md#inject) the following CSS as `spotify.css`:
+- It is also required to [sign the app](API.md#widevine), or many songs will not play.
+- To hide all download links (as if you were in the actual app), [inject](API.md#inject) the following CSS as `spotify.css`:
 
 ```css
 a[href='/download'] {
@@ -219,8 +219,8 @@ You can use Notion pages with Nativefier without much hassle, but Notion itself 
 With Nativefier you can now extend Notion's functionality and possibilities by adding HTML buttons that can call other javascript functions, since it enables you to inject custom Javascript and CSS.
 
 ```sh
-nativefier 'YOUR_NOTION_PAGE_SHARE_URL'
-  --inject notion.js
+nativefier 'YOUR_NOTION_PAGE_SHARE_URL' \
+  --inject notion.js \
   --inject notion.css
 ```
 
@@ -285,7 +285,7 @@ After that, set your css file as follows:
 You can get an almost macOS look-alike using this:
 
 ```sh
-nativefier https://teams.microsoft.com --name 'Microsoft Teams' --counter true --darwin-dark-mode-support true --title-bar-style hidden --internal-urls "(.*)" --inject teamsapp.css
+nativefier https://teams.microsoft.com --name 'Microsoft Teams' --counter --darwin-dark-mode-support --title-bar-style hidden --internal-urls "(.*)" --inject teamsapp.css
 ```
 Note that the `--internal-urls` argument is necessary to login.
 

@@ -48,10 +48,13 @@ what you need to know to get started hacking on Nativefier.
 
 ## Setup
 
+You need Node.js ≥ 20.18.1 and npm ≥ 10.8.2 (see `package.json` / `engines`).
+The `.nvmrc` pins the Node major we build & test against, so `nvm use` works.
+
 First, clone the project:
 
 ```bash
-git clone https://github.com/nativefier/nativefier.git
+git clone https://github.com/ABuljko/nativefier.git
 cd nativefier
 ```
 
@@ -108,6 +111,8 @@ but is painful to do manually. Do yourself a favor and install a
 - To run all tests, `npm t`
 - To run only unit tests, `npm run test:unit`
 - To run only integration tests, `npm run test:integration`
+- To run only the Playwright end-to-end tests, `npm run test:playwright` (Windows-only in CI)
+- To run everything except Playwright, `npm run test:noplaywright`
 - Logging is suppressed by default in tests, to avoid polluting Jest output.
   To get debug logs, `npm run test:withlog` or set the `LOGLEVEL` env. var.
 - For a good live experience, open two terminal panes/tabs running code/tests watchers:
@@ -135,7 +140,7 @@ When a new major [Electron release](https://github.com/electron/electron/release
    1. With `npm test` and `npm run test:manual`
    2. With extra manual testing
 5. When confident enough, release it in a regression-spelunking-friendly way:
-   1. If `master` has unreleased commits, make a patch/minor release with them, but without the major Electron bump.
+   1. If `main` has unreleased commits, make a patch/minor release with them, but without the major Electron bump.
    2. Commit your Electron major bump and release it as a major new Nativefier version. Help users identify the breaking change by using a bold **[BREAKING]** marker in `CHANGELOG.md` and in the GitHub release.
 
 ### Deps updates
@@ -173,7 +178,7 @@ CLI tools like Nativefier should use shrinkwrap.
 
 ### Release
 
-While on `master`, with no uncommitted changes, run:
+While on `main`, with no uncommitted changes, run:
 
 ```bash
 npm run changelog -- $VERSION
@@ -183,9 +188,13 @@ npm run changelog -- $VERSION
 Do follow semantic versioning, and give visibility to breaking changes
 in release notes by prefixing their line with **[BREAKING]**.
 
+Publishing is driven by `.github/workflows/publish.yml`, which runs on GitHub
+release creation: it runs the Playwright tests, then the rest of the tests and
+the linter, then `npm publish`, then builds and pushes the Docker image.
+
 ### Triage
 
-These are the guidelines we (try to) follow when triaging [issues](https://github.com/nativefier/nativefier/issues):
+These are the guidelines we (try to) follow when triaging [issues](https://github.com/ABuljko/nativefier/issues):
 
 1. Do your best to conciliate **empathy & efficiency, and keep your cool**.
    It’s not always easy 😄😬😭🤬. Get away from triaging if you feel grouchy.

@@ -13,18 +13,26 @@ Please include the following in your new issue:
 
 ## Pull Requests
 
-See [here](https://github.com/nativefier/nativefier/blob/master/HACKING.md) for instructions on how to set up a development environment.
+See [HACKING.md](https://github.com/ABuljko/nativefier/blob/main/HACKING.md) for
+instructions on how to set up a development environment, and for the guidelines
+we ask contributions to follow.
 
-We follow the [Airbnb Style Guide](https://github.com/airbnb/javascript), please make sure tests and lints pass when you submit your pull request. 
+Code style is enforced by ESLint (with
+[typescript-eslint](https://typescript-eslint.io/)) and
+[Prettier](https://prettier.io/); please make sure tests and lints pass when you
+submit your pull request.
 
 The following commands might be helpful:
 
 ```bash
-# Run specs only
-npm run test
+# Run tests only
+npm test
 
 # Run linter only
 npm run lint
+
+# Auto-fix lint errors and reformat
+npm run lint:fix && npm run lint:format
 ```
 
 Thank you so much for your contribution!
