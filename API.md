@@ -2,7 +2,6 @@
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
 - [Packaging Squirrel-based installers](#packaging-squirrel-based-installers)
 - [Command Line](#command-line)
   - [Target Url](#target-url)
@@ -39,7 +38,6 @@
     - [[process-envs]](#process-envs)
     - [[show-menu-bar]](#show-menu-bar)
     - [[single-instance]](#single-instance)
-    - [[title-bar-style]](#title-bar-style)
     - [[tray]](#tray)
     - [[width]](#width)
     - [[x]](#x)
@@ -57,11 +55,11 @@
   - [URL Handling Options](#url-handling-options)
     - [[block-external-urls]](#block-external-urls)
     - [[internal-urls]](#internal-urls)
-      - [[internal-login-pages]](#internal-login-pages)
+      - [Internal Login Pages](#internal-login-pages)
     - [[strict-internal-urls]](#strict-internal-urls)
     - [[proxy-rules]](#proxy-rules)
   - [Auth Options](#auth-options)
-    - [[basic-auth-username] and [basic-auth-password]](#basic-auth-username-and-basic-auth-password)
+    - [[[basic-auth-username] and [basic-auth-password]]](#basic-auth-username-and-basic-auth-password)
   - [Graphics Options](#graphics-options)
     - [[disable-gpu]](#disable-gpu)
     - [[enable-es3-apis]](#enable-es3-apis)
@@ -70,7 +68,7 @@
     - [[disable-old-build-warning-yesiknowitisinsecure]](#disable-old-build-warning-yesiknowitisinsecure)
     - [[ignore-certificate]](#ignore-certificate)
     - [[insecure]](#insecure)
-  - [Platform Specific Options](#platform-specific-options)
+  - [Platform-Specific Options](#platform-specific-options)
     - [[app-copyright]](#app-copyright)
     - [[app-version]](#app-version)
     - [[bounce]](#bounce)
@@ -78,17 +76,17 @@
     - [[counter]](#counter)
     - [[darwin-dark-mode-support]](#darwin-dark-mode-support)
     - [[fast-quit]](#fast-quit)
+    - [[title-bar-style]](#title-bar-style)
     - [[win32metadata]](#win32metadata)
   - [Debug Options](#debug-options)
     - [[crash-reporter]](#crash-reporter)
     - [[verbose]](#verbose)
     - [[quiet]](#quiet)
-  - [Flash Options (Deprecated)](#flash-options-deprecated)
-    - [[flash] and [flash-path] (DEPRECATED)](#flash-and-flash-path-deprecated)
 - [Programmatic API](#programmatic-api)
 - [Accessing The Electron Session](#accessing-the-electron-session)
   - [Important Note On funcArgs](#important-note-on-funcargs)
   - [session-interaction-reply](#session-interaction-reply)
+  - [Request IDs](#request-ids)
   - [Errors](#errors)
   - [Complex Return Values](#complex-return-values)
   - [Example](#example)
@@ -108,35 +106,36 @@ You must provide:
 - Either a `targetUrl` to generate a new app from it.
 - Or option `--upgrade <pathOfAppToUpgrade>` to upgrade an existing app.
 
-Command line options are listed below.
+Command line options are listed below. They are grouped exactly as
+`nativefier --help` groups them.
 
-#### Target Url
+### Target Url
 
 The url to point the application at.
 
-#### [dest]
+### [dest]
 
 Specifies the destination directory to build the app to.
 If no parameter is passed, defaults to the current working directory,
-or _[New in 46.0.5]_ the `NATIVEFIER_APPS_DIR` environment variable if set.
+or the `NATIVEFIER_APPS_DIR` environment variable if set.
 
 **Tip:** Add `export NATIVEFIER_APPS_DIR=~/Applications/` to your
 `~/.bashrc` (or `~/.zshrc` or similar) to set the default app destination
 if none is passed. This lets you simply run `nativefier example.com` and
 have the app automatically built in your Applications folder.
 
-#### Help
+### Help
 
 ```
--h, --help
+--help
 ```
 
 Prints the usage information.
 
-#### Version
+### Version
 
 ```
--v, --version
+--version
 ```
 
 Prints the version of your `nativefier` install.
@@ -177,7 +176,109 @@ Specifies if the source code within the nativefied app should be packaged into a
 -e, --electron-version <value>
 ```
 
-Electron version without the `v`, see https://github.com/atom/electron/releases.
+The Electron version to build the app with, without the `v` (e.g. `25.9.8`).
+Defaults to the version Nativefier bundles (`DEFAULT_ELECTRON_VERSION` in
+[`src/constants.ts`](src/constants.ts), currently `25.9.8`).
+See https://github.com/electron/electron/releases for the available versions.
+
+#### [global-shortcuts]
+
+```
+--global-shortcuts shortcuts.json
+```
+
+Register global shortcuts which will trigger input events like key presses or pointer events in the application.
+
+You may define multiple global shortcuts which can trigger a series of input events. It has the following structure:
+
+```js
+[
+  {
+    // Key is passed as first argument to globalShortcut.register
+    key: 'CommandOrControl+Shift+Z',
+    // The input events exactly match the event config in Electron for contents.sendInputEvent(event)
+    inputEvents: [
+      {
+        // Available event types: mouseDown, mouseUp, mouseEnter, mouseLeave, contextMenu, mouseWheel, mouseMove, keyDown, keyUp or char
+        type: 'keyDown',
+        // Further config depends on your event type. See docs at: https://www.electronjs.org/docs/latest/api/web-contents
+        keyCode: 'Space',
+      },
+    ],
+  },
+];
+```
+
+_Note regarding modifier keys:_ If you want to trigger key events which include a modifier (Ctrl, Shift,...), you need to keyDown the modifier key first, then keyDown the actual key _including_ the modifier key as modifier property and then keyUp both keys again. No idea what this means? See the example for `MediaPreviousTrack` below! For more details, please see the Electron documentation:
+
+- List of available keys: https://www.electronjs.org/docs/latest/api/accelerator
+- Details about how to create input event objects: https://www.electronjs.org/docs/latest/api/web-contents
+
+_Note about Global Shortcuts on macOS_
+
+On MacOS 10.14+, if you have set a global shortcut that includes a Media key, the user will need to be prompted for permissions to enable these keys in System Preferences > Security & Privacy > Accessibility.
+
+Example `shortcuts.json` for `https://deezer.com` & `https://soundcloud.com` to get your play/pause/previous/next media keys working:
+
+```json
+[
+  {
+    "key": "MediaPlayPause",
+    "inputEvents": [
+      {
+        "type": "keyDown",
+        "keyCode": "Space"
+      }
+    ]
+  },
+  {
+    "key": "MediaPreviousTrack",
+    "inputEvents": [
+      {
+        "type": "keyDown",
+        "keyCode": "Shift"
+      },
+      {
+        "type": "keyDown",
+        "keyCode": "Left",
+        "modifiers": ["shift"]
+      },
+      {
+        "type": "keyUp",
+        "keyCode": "Left",
+        "modifiers": ["shift"]
+      },
+      {
+        "type": "keyUp",
+        "keyCode": "Shift"
+      }
+    ]
+  },
+  {
+    "key": "MediaNextTrack",
+    "inputEvents": [
+      {
+        "type": "keyDown",
+        "keyCode": "Shift"
+      },
+      {
+        "type": "keyDown",
+        "keyCode": "Right",
+        "modifiers": ["shift"]
+      },
+      {
+        "type": "keyUp",
+        "keyCode": "Right",
+        "modifiers": ["shift"]
+      },
+      {
+        "type": "keyUp",
+        "keyCode": "Shift"
+      }
+    ]
+  }
+]
+```
 
 #### [icon]
 
@@ -189,7 +290,7 @@ Notes:
 
 - When packaging for Windows, must be a path to a `.ico` file.
 - When packaging for Linux, must be a path to a `.png` file.
-- When packaging for macOS, must be a `.icns` or a `.png` file if the [optional dependencies](../README.md#optional-dependencies) are installed.
+- When packaging for macOS, must be a `.icns` or a `.png` file if the [optional dependencies](README.md#installation) are installed.
   If your `PATH` has our image-conversion dependencies (`iconutil`, and either ImageMagick `convert` + `identify`, or GraphicsMagick `gm`), Nativefier will automatically convert the `.png` to a `.icns` for you.
 
 Alternative to macOS users: [iConvertIcons](https://iconverticons.com/online/) can be used to convert `.pngs`, though it can be quite cumbersome.
@@ -204,7 +305,7 @@ To retrieve the `.icns` file from the downloaded file, extract it first and pres
 
 The name of the application, which will affect strings in titles and the icon.
 
-Note to Linux users: do not put spaces if you define the app name yourself with `--name`, as this will cause problems (tested on Ubuntu 14.04) when pinning a packaged app to the launcher.
+Note to Linux users: do not put spaces if you define the app name yourself with `--name`, as this causes problems when pinning a packaged app to the launcher.
 
 #### [no-overwrite]
 
@@ -228,7 +329,7 @@ Specifies if the destination directory should be not overwritten, defaults to fa
     (See https://nodejs.org/api/os.html#os_os_platform)
 - Can be overwritten by specifying either `linux`, `windows`, `osx` or `mas` for a Mac App Store specific build.
 
-Note: careful to not conflate _platform_ with _architecture_. If you want for example a 32bit build or an ARM build, it's `--arch` you are looking for. See its documentation for details.
+Note: careful to not conflate _platform_ with _architecture_. If you want for example an ARM build, it's `--arch` you are looking for. See its documentation for details.
 
 For backwards compatibility, less-clear values `win32` (for Windows) and `darwin`, `mac` (for macOS) are supported.
 
@@ -238,7 +339,7 @@ For backwards compatibility, less-clear values `win32` (for Windows) and `darwin
 --portable
 ```
 
-_[New in 43.1.0]_ Make your app store its user data (cookies, cache, etc) inside the app folder, making it "portable" in the sense popularized by [PortableApps.com](https://portableapps.com/): you can carry it around e.g. on a USB key, and it will work the same with your data.
+Make your app store its user data (cookies, cache, etc) inside the app folder, making it "portable" in the sense popularized by [PortableApps.com](https://portableapps.com/): you can carry it around e.g. on a USB key, and it will work the same with your data.
 
 _IMPORTANT SECURITY NOTICE_: when creating a portable app, all data accumulated after running the app (including login information, cache, cookies), will be saved in the app folder. If this app is then shared with others, THEY WILL HAVE THAT ACCUMULATED DATA, POTENTIALLY INCLUDING ACCESS TO ANY ACCOUNTS YOU LOGGED INTO.
 
@@ -256,7 +357,7 @@ _IMPORTANT SECURITY NOTICE_: when creating a portable app, all data accumulated 
 --upgrade <pathToExistingApp>
 ```
 
-_[New in 43.1.0]_ This option will attempt to extract all existing options from the old app, and upgrade it using the current Nativefier CLI.
+This option will attempt to extract all existing options from the old app, and upgrade it using the current Nativefier CLI.
 
 _Important data safety note_: This action is an in-place upgrade, and will REPLACE the current application. In case this feature does not work as intended or as the user may wish, it is advised to make a backup of the app to be upgraded before using, or specify an alternate directory as you would when creating a new file.\*\*
 
@@ -268,7 +369,7 @@ The provided path must be the "executable" of an application packaged with a pre
 --widevine
 ```
 
-_[New in 11.0.2]_ Use a Widevine-enabled version of Electron for DRM playback, see https://github.com/castlabs/electron-releases.
+Use a Widevine-enabled version of Electron for DRM playback, see https://github.com/castlabs/electron-releases.
 
 Note: some sites using Widevine (like Udemy or HBO Max) may still refuse to load videos, and require EVS-signing your Nativefier app to work. Try signing your app using CastLabs tools. See https://github.com/castlabs/electron-releases/wiki/EVS and [#1147](https://github.com/nativefier/nativefier/issues/1147#issuecomment-828750362). TL;DR:
 
@@ -291,7 +392,7 @@ python -m castlabs_evs.vmp sign-pkg Udemy-win32-x64
 --always-on-top
 ```
 
-_[New in 7.6.0]_ Enable always on top for the packaged application.
+Enable always on top for the packaged application.
 
 #### [background-color]
 
@@ -299,7 +400,7 @@ _[New in 7.6.0]_ Enable always on top for the packaged application.
 --background-color <string>
 ```
 
-_[New in 7.7.0]_ See https://electronjs.org/docs/api/browser-window#setting-backgroundcolor
+See https://electronjs.org/docs/api/browser-window#setting-backgroundcolor
 
 #### [bookmarks-menu]
 
@@ -307,7 +408,7 @@ _[New in 7.7.0]_ See https://electronjs.org/docs/api/browser-window#setting-back
 --bookmarks-menu <string>
 ```
 
-_[New in 43.1.0]_ Path to a JSON file defining a bookmarks menu. In addition to containing a list of bookmarks, this file customizes the name of the menu and (optionally) allows assigning keyboard shortcuts to bookmarks.
+Path to a JSON file defining a bookmarks menu. In addition to containing a list of bookmarks, this file customizes the name of the menu and (optionally) allows assigning keyboard shortcuts to bookmarks.
 
 This menu is a simple list; folders are not supported.
 
@@ -351,7 +452,7 @@ Example of such a JSON file:
 --browserwindow-options <json-string>
 ```
 
-_[New in 7.7.0]_ A JSON string that will be sent directly into Electron BrowserWindow options.
+A JSON string that will be sent directly into Electron BrowserWindow options.
 See [Electron's BrowserWindow API Documentation](https://electronjs.org/docs/api/browser-window#new-browserwindowoptions) for the complete list of options.
 
 Example:
@@ -470,47 +571,13 @@ Specifies if the menu bar should be shown.
 
 Prevents application from being run multiple times. If such an attempt occurs the already running instance is brought to front.
 
-#### [title-bar-style]
-
-```
---title-bar-style <value>
-```
-
-_[New in 7.6.4]_ (macOS only) Sets the style for the app's title bar. See more details at electron's [Frameless Window](https://www.electronjs.org/pt/docs/latest/api/frameless-window) documentation.
-
-Consider injecting a custom CSS (via `--inject`) for better integration. Specifically, the CSS should specify a draggable region. For instance, if the target website has a `<header>` element, you can make it draggable like so.
-
-```css
-/* site.css */
-
-/* header is draggable... */
-header {
-  -webkit-app-region: drag;
-}
-
-/* but any buttons inside the header shouldn't be draggable */
-header button {
-  -webkit-app-region: no-drag;
-}
-
-/* perhaps move some items out of way for the traffic light */
-header div:first-child {
-  margin-left: 100px;
-  margin-top: 25px;
-}
-```
-
-```sh
-nativefier http://google.com --inject site.css --title-bar-style 'hiddenInset'
-```
-
 #### [tray]
 
 ```
 --tray [start-in-tray]
 ```
 
-_[New in 7.5.0]_ Application will stay as an icon in the system tray. Prevents application from being closed from clicking the window close button.
+Application will stay as an icon in the system tray. Prevents application from being closed from clicking the window close button.
 
 When the optional argument `start-in-tray` is provided, i.e. the application is started using `--tray start-in-tray`, the main window will not be shown on first start.
 
@@ -538,7 +605,7 @@ X location of the packaged application window.
 --y <value>
 ```
 
-_[New in 7.6.0]_ Y location of the packaged application window.
+Y location of the packaged application window.
 
 #### [zoom]
 
@@ -546,7 +613,7 @@ _[New in 7.6.0]_ Y location of the packaged application window.
 --zoom <value>
 ```
 
-_[New in 7.6.0]_ Sets a default zoom factor to be used when the app is opened, defaults to `1.0`.
+Sets a default zoom factor to be used when the app is opened, defaults to `1.0`.
 
 ### Internal Browser Options
 
@@ -556,111 +623,12 @@ _[New in 7.6.0]_ Sets a default zoom factor to be used when the app is opened, d
 --file-download-options <json-string>
 ```
 
-_[New in 7.6.0]_ A JSON string of key/value pairs to be set as file download options. See [electron-dl](https://github.com/sindresorhus/electron-dl) for available options.
+A JSON string of key/value pairs to be set as file download options. See [electron-dl](https://github.com/sindresorhus/electron-dl) for available options.
 
 Example:
 
 ```bash
 nativefier <your-website> --file-download-options '{"saveAs": true}'
-```
-
-#### [global-shortcuts]
-
-```
---global-shortcuts shortcuts.json
-```
-
-_[New in 7.6.9]_ Register global shortcuts which will trigger input events like key presses or pointer events in the application.
-
-You may define multiple global shortcuts which can trigger a series of input events. It has the following structure:
-
-```js
-[
-  {
-    // Key is passed as first argument to globalShortcut.register
-    key: 'CommandOrControl+Shift+Z',
-    // The input events exactly match the event config in Electron for contents.sendInputEvent(event)
-    inputEvents: [
-      {
-        // Available event types: mouseDown, mouseUp, mouseEnter, mouseLeave, contextMenu, mouseWheel, mouseMove, keyDown, keyUp or char
-        type: 'keyDown',
-        // Further config depends on your event type. See docs at: https://github.com/electron/electron/blob/master/docs/api/web-contents.md#contentssendinputeventevent
-        keyCode: 'Space',
-      },
-    ],
-  },
-];
-```
-
-_Note regarding modifier keys:_ If you want to trigger key events which include a modifier (Ctrl, Shift,...), you need to keyDown the modifier key first, then keyDown the actual key _including_ the modifier key as modifier property and then keyUp both keys again. No idea what this means? See the example for `MediaPreviousTrack` below! For more details, please see the Electron documentation:
-
-- List of available keys: https://github.com/electron/electron/blob/master/docs/api/accelerator.md
-- Details about how to create input event objects: https://github.com/electron/electron/blob/master/docs/api/web-contents.md#contentssendinputeventevent
-
-_Note about Global Shortcuts on macOS_
-
-On MacOS 10.14+, if you have set a global shortcut that includes a Media key, the user will need to be prompted for permissions to enable these keys in System Preferences > Security & Privacy > Accessibility.
-
-Example `shortcuts.json` for `https://deezer.com` & `https://soundcloud.com` to get your play/pause/previous/next media keys working:
-
-```json
-[
-  {
-    "key": "MediaPlayPause",
-    "inputEvents": [
-      {
-        "type": "keyDown",
-        "keyCode": "Space"
-      }
-    ]
-  },
-  {
-    "key": "MediaPreviousTrack",
-    "inputEvents": [
-      {
-        "type": "keyDown",
-        "keyCode": "Shift"
-      },
-      {
-        "type": "keyDown",
-        "keyCode": "Left",
-        "modifiers": ["shift"]
-      },
-      {
-        "type": "keyUp",
-        "keyCode": "Left",
-        "modifiers": ["shift"]
-      },
-      {
-        "type": "keyUp",
-        "keyCode": "Shift"
-      }
-    ]
-  },
-  {
-    "key": "MediaNextTrack",
-    "inputEvents": [
-      {
-        "type": "keyDown",
-        "keyCode": "Shift"
-      },
-      {
-        "type": "keyDown",
-        "keyCode": "Right",
-        "modifiers": ["shift"]
-      },
-      {
-        "type": "keyUp",
-        "keyCode": "Right",
-        "modifiers": ["shift"]
-      },
-      {
-        "type": "keyUp",
-        "keyCode": "Shift"
-      }
-    ]
-  }
-]
 ```
 
 #### [inject]
@@ -697,7 +665,7 @@ Set the language or locale to render the web site as (e.g., "fr", "en-US", "es",
 
 Set the user agent to run the created app with. Use `--user-agent-honest` to use the true Electron user agent.
 
-_[New in 44.0.0]_ The following short codes are also supported to generate a user agent: `edge`, `firefox`, `safari`.
+The following short codes are also supported to generate a user agent: `edge`, `firefox`, `safari`.
 
 - `edge` will generate a Microsoft Edge user agent matching the Chrome version of Electron being used
 - `firefox` will generate a Mozilla Firefox user agent matching the latest stable release of that browser
@@ -721,7 +689,7 @@ If this flag is passed, it will not override the user agent, and use Electron's 
 --clear-cache
 ```
 
-_[New in 7.6.11]_ Prevents the application from preserving cache between launches.
+Prevents the application from preserving cache between launches.
 
 #### [disk-cache-size]
 
@@ -729,7 +697,7 @@ _[New in 7.6.11]_ Prevents the application from preserving cache between launche
 --disk-cache-size <value>
 ```
 
-_[New in 7.4.1]_ Forces the maximum disk space to be used by the disk cache. Value is given in bytes.
+Forces the maximum disk space to be used by the disk cache. Value is given in bytes.
 
 ### URL Handling Options
 
@@ -778,7 +746,7 @@ nativefier https://google.com --internal-urls ".*?"
 
 ##### Internal Login Pages
 
-_[New in 43.0.0]_ Finally, URLs for known login pages
+Finally, URLs for known login pages
 are considered internal. This does not replace `internal-urls`, it complements
 it, and happens _before_ your `internal-urls` rule is applied. So, if you
 already set the flag to let such auth pages open internally, you don't need to
@@ -796,13 +764,13 @@ Current known internal login pages:
 - `login.live.com` , `login.microsoftonline.com`
 - `okta.com`
 - `twitter.com/oauth/authenticate`
-- `workspaceair.com`
-- `securid.com`
+- `*.workspaceair.com`
+- `*.securid.com`
 
 Note: While .com is specified, for most of these we try to match even on non-US
 based domains such as `.co.uk` as well
 
-If you think this list is missing a login page that you think should be internal, feel free to submit an [issue](https://github.com/nativefier/nativefier/issues/new?assignees=&labels=bug&template=bug_report.md&title=[New%20internal%20login%20page%20request]%20Your%20login%20page%20here) or even better a pull request!
+If you think this list is missing a login page that you think should be internal, feel free to submit an [issue](https://github.com/ABuljko/nativefier/issues/new?assignees=&labels=bug&template=bug_report.md&title=[New%20internal%20login%20page%20request]%20Your%20login%20page%20here) or even better a pull request!
 
 #### [strict-internal-urls]
 
@@ -812,14 +780,13 @@ If you think this list is missing a login page that you think should be internal
 
 Disables base domain matching when determining if a link is internal.  Only the `--internal-urls` regex and login pages will be matched against, so `app.foo.com` will be external to `www.foo.com` unless it matches the `--internal-urls` regex.
 
-
 #### [proxy-rules]
 
 ```
 --proxy-rules <value>
 ```
 
-_[New in 7.7.1]_ See [Electron proxyRules](https://electronjs.org/docs/api/session?q=proxy#sessetproxyconfig-callback) for more details.
+See [Electron proxyRules](https://electronjs.org/docs/api/session?q=proxy#sessetproxyconfig-callback) for more details.
 
 Example:
 
@@ -835,7 +802,7 @@ nativefier https://google.com --proxy-rules http://127.0.0.1:1080
 --basic-auth-username <value> --basic-auth-password <value>
 ```
 
-_[New in 7.5.0]_ Set basic http(s) auth via the command line to have the app automatically log you in to a protected site. Both fields are required if one is set.
+Set basic http(s) auth via the command line to have the app automatically log you in to a protected site. Both fields are required if one is set.
 
 ### Graphics Options
 
@@ -845,7 +812,7 @@ _[New in 7.5.0]_ Set basic http(s) auth via the command line to have the app aut
 --disable-gpu
 ```
 
-_[New in 7.6.2]_ Disable hardware acceleration for the packaged application.
+Disable hardware acceleration for the packaged application.
 
 #### [enable-es3-apis]
 
@@ -853,7 +820,7 @@ _[New in 7.6.2]_ Disable hardware acceleration for the packaged application.
 --enable-es3-apis
 ```
 
-_[New in 7.4.1]_ Passes the enable-es3-apis flag to the Chrome engine, to force the activation of WebGl 2.0.
+Passes the enable-es3-apis flag to the Chrome engine, to force the activation of WebGl 2.0.
 
 #### [ignore-gpu-blacklist]
 
@@ -861,17 +828,19 @@ _[New in 7.4.1]_ Passes the enable-es3-apis flag to the Chrome engine, to force 
 --ignore-gpu-blacklist
 ```
 
-_[New in 7.4.1]_ Passes the ignore-gpu-blacklist flag to the Chrome engine, to allow for WebGl apps to work on non supported graphics cards.
+Passes the ignore-gpu-blacklist flag to the Chrome engine, to allow for WebGl apps to work on non supported graphics cards.
 
 ### (In)Security Options
 
 #### [disable-old-build-warning-yesiknowitisinsecure]
 
+```
+--disable-old-build-warning-yesiknowitisinsecure
+```
+
 Disables the warning shown when opening a Nativefier app made a long time ago, using an old and probably insecure Electron. Nativefier uses the Chrome browser (through Electron), and remaining on an old version is A. performance sub-optimal and B. dangerous.
 
 However, there are legitimate use cases to disable such a warning. For example, if you are using Nativefier to ship a kiosk app exposing an internal site (over which you have control). Under those circumstances, it is reasonable to disable this warning that you definitely don't want end-users to see.
-
-More description about the options for `nativefier` can be found at the above [section](#command-line).
 
 #### [ignore-certificate]
 
@@ -889,7 +858,7 @@ Forces the packaged app to ignore certificate errors.
 
 Forces the packaged app to ignore web security errors, such as [Mixed Content](https://developer.mozilla.org/en-US/docs/Security/Mixed_content) errors when receiving HTTP content on a HTTPS site.
 
-### Platform Specific Options
+### Platform-Specific Options
 
 #### [app-copyright]
 
@@ -897,7 +866,7 @@ Forces the packaged app to ignore web security errors, such as [Mixed Content](h
 --app-copyright <value>
 ```
 
-_[New in 7.5.0]_ The human-readable copyright line for the app. Maps to the `LegalCopyright` metadata property on Windows, and `NSHumanReadableCopyright` on OS X.
+(macOS and Windows only) The human-readable copyright line for the app. Maps to the `LegalCopyright` metadata property on Windows, and `NSHumanReadableCopyright` on macOS.
 
 #### [app-version]
 
@@ -905,7 +874,7 @@ _[New in 7.5.0]_ The human-readable copyright line for the app. Maps to the `Leg
 --app-version <value>
 ```
 
-_[New in 7.5.0]_ (macOS and Windows only) The release version of the application. By default the `version` property in the `package.json` is used but it can be overridden with this argument. If neither are provided, the version of Electron will be used. Maps to the `ProductVersion` metadata property on Windows, and `CFBundleShortVersionString` on OS X.
+(macOS and Windows only) The release version of the application. By default the `version` property in the `package.json` is used but it can be overridden with this argument. If neither are provided, the version of Electron will be used. Maps to the `ProductVersion` metadata property on Windows, and `CFBundleShortVersionString` on macOS.
 
 #### [bounce]
 
@@ -913,7 +882,7 @@ _[New in 7.5.0]_ (macOS and Windows only) The release version of the application
 --bounce
 ```
 
-_[New in 7.6.2]_ (macOS only) When the counter increases, the dock icon will bounce for one second. This only works if the `--counter` option is active.
+(macOS only) When the counter increases, the dock icon will bounce for one second. This only works if the `--counter` option is active.
 
 #### [build-version]
 
@@ -921,7 +890,7 @@ _[New in 7.6.2]_ (macOS only) When the counter increases, the dock icon will bou
 --build-version <value>
 ```
 
-_[New in 7.5.0]_ (macOS and Windows only) The build version of the application. Maps to the `FileVersion` metadata property on Windows, and `CFBundleVersion` on OS X.
+(macOS and Windows only) The build version of the application. Maps to the `FileVersion` metadata property on Windows, and `CFBundleVersion` on macOS.
 
 #### [counter]
 
@@ -946,6 +915,55 @@ _[New in 7.5.0]_ (macOS and Windows only) The build version of the application. 
 ```
 
 (macOS only) Specifies to quit the app after closing all windows, defaults to false.
+
+#### [title-bar-style]
+
+```
+--title-bar-style <value>
+```
+
+(macOS only) Sets the style for the app's title bar, either `hidden` or
+`hiddenInset`. See more details in Electron's [Frameless Window](https://www.electronjs.org/docs/latest/api/frameless-window) documentation.
+
+Consider injecting a custom CSS (via `--inject`) for better integration. Specifically, the CSS should specify a draggable region. For instance, if the target website has a `<header>` element, you can make it draggable like so.
+
+```css
+/* site.css */
+
+/* header is draggable... */
+header {
+  -webkit-app-region: drag;
+}
+
+/* but any buttons inside the header shouldn't be draggable */
+header button {
+  -webkit-app-region: no-drag;
+}
+
+/* perhaps move some items out of way for the traffic light */
+header div:first-child {
+  margin-left: 100px;
+  margin-top: 25px;
+}
+```
+
+```sh
+nativefier http://google.com --inject site.css --title-bar-style 'hiddenInset'
+```
+
+#### [win32metadata]
+
+```
+--win32metadata <json-string>
+```
+
+a JSON string of key/value pairs of application metadata (ProductName, InternalName, FileDescription) to embed into the executable (Windows only).
+
+Example:
+
+```bash
+nativefier <your-geolocation-enabled-website> --win32metadata '{"ProductName": "Your Product Name", "InternalName": "Your Internal Name", "FileDescription": "Your File Description"}'
+```
 
 ### Debug Options
 
@@ -979,65 +997,11 @@ Shows detailed logs in the console.
 
 Suppress all log output. If both `verbose` and `quiet` are passed to the CLI, `verbose` will take precedence.
 
-#### [win32metadata]
-
-```
---win32metadata <json-string>
-```
-
-a JSON string of key/value pairs of application metadata (ProductName, InternalName, FileDescription) to embed into the executable (Windows only).
-
-Example:
-
-```bash
-nativefier <your-geolocation-enabled-website> --win32metadata '{"ProductName": "Your Product Name", "InternalName", "Your Internal Name", "FileDescription": "Your File Description"}'
-```
-
-### Flash Options (DEPRECATED)
-
-#### [flash] and [flash-path] (DEPRECATED)
-
-_DEPRECATED as of 2021-03-10, will be removed at some point_: There's nothing Nativefier can do to stop this treadmill, so here it goes.
-Flash is triply dead upstream: at Adobe, in Chrome, and now in Electron.
-Nativefier 43.0.0 was just released, and defaults to Electron 12, which
-[removes support for Flash](https://www.electronjs.org/blog/electron-12-0#breaking-changes):
-
-> Removed Flash support: Chromium has removed support for Flash, which was also
-> removed in Electron 12. See [Chromium's Flash Roadmap](https://www.chromium.org/flash-roadmap).
-
-Your best bet now is on [Ruffle, "a Flash Player emulator built in Rust"](https://ruffle.rs/).
-It's usable to play `.swf`s, and that's [what Archive.org does](https://blog.archive.org/2020/11/19/flash-animations-live-forever-at-the-internet-archive/).
-It's an emulator, so it's not the real perfect deal, but it already works well
-for many swfs, and will get better with time.
-
-You _might_ still be able to use Nativefier's existing Flash flags while they work,
-by adding a `--electron-version 11.3.0` to your flags, but it's only downhill
-from here and our Flash flags will be removed at some point in the future,
-when maintaining compatibility with old Electrons becomes impossible.
-
-```
---flash
-```
-
-If `--flash` is specified, Nativefier will automatically try to determine the
-location of your Google Chrome flash binary. Take note that the version of Chrome
-on your computer should be the same as the version used by the version of Electron
-for the Nativefied package.
-
-Note that if this flag is specified, the `--insecure` flag will be added automatically,
-to prevent Mixed Content errors on sites such as [Twitch.tv](https://www.twitch.tv/).
-
-```
---flash-path <value>
-```
-
-You can also specify the path to the Chrome flash plugin directly with this flag.
-The path can be found at [chrome://plugins](chrome://plugins), under
-`Adobe Flash Player` > `Location`. This flag automatically enables the `--flash` flag.
-
 ## Programmatic API
 
-In addition to CLI flags, Nativefier offers a programmatic Node.js API.
+In addition to the CLI, Nativefier exposes a Node.js API: `buildNativefierApp`,
+which takes the same options as the CLI flags (camelCased) and returns a promise
+resolving with the path of the app it built.
 
 ```bash
 # install and save to package.json
@@ -1047,18 +1011,20 @@ npm install --save nativefier
 In your `.js` file:
 
 ```javascript
-var nativefier = require('nativefier').default;
+const { buildNativefierApp } = require('nativefier');
 
-// possible options, defaults unless specified otherwise
-var options = {
-  name: 'Web WhatsApp', // will be inferred if not specified
-  targetUrl: 'http://web.whatsapp.com', // required
+// A few of the available options; they mirror the CLI flags, camelCased.
+// Only `targetUrl` is required, everything else falls back to the same
+// defaults the CLI uses.
+const options = {
+  targetUrl: 'https://web.whatsapp.com', // required
+  name: 'Web WhatsApp', // inferred from the page title if not specified
   platform: 'darwin', // defaults to the current system
   arch: 'x64', // defaults to the current system
-  version: '0.36.4',
+  electronVersion: '25.9.8', // defaults to the bundled Electron
   out: '.',
   overwrite: false,
-  asar: false, // see conceal
+  conceal: false, // package the app source into an asar archive
   icon: '~/Desktop/icon.png',
   counter: false,
   bounce: false,
@@ -1066,14 +1032,15 @@ var options = {
   height: 800,
   showMenuBar: false,
   fastQuit: false,
-  userAgent: 'Mozilla ...', // will infer a default for your current system
+  userAgent: 'Mozilla ...', // inferred for the current system if not specified
+  userAgentHonest: false,
   ignoreCertificate: false,
   ignoreGpuBlacklist: false,
   enableEs3Apis: false,
   internalUrls: '.*?',
+  strictInternalUrls: false,
   blockExternalUrls: false,
   insecure: false,
-  honest: false,
   zoom: 1.0,
   singleInstance: false,
   clearCache: false,
@@ -1085,14 +1052,17 @@ var options = {
   },
 };
 
-nativefier(options, function (error, appPath) {
-  if (error) {
-    console.error(error);
-    return;
-  }
-  console.log('App has been nativefied to', appPath);
-});
+buildNativefierApp(options)
+  .then((appPath) => {
+    console.log('App has been nativefied to', appPath);
+  })
+  .catch((error) => {
+    console.error('Error building app:', error);
+  });
 ```
+
+The complete list of accepted options is the `RawOptions` type, declared in
+[`shared/src/options/model.ts`](shared/src/options/model.ts).
 
 ## Accessing The Electron Session
 
