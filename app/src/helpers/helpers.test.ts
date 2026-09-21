@@ -339,6 +339,16 @@ describe('openExternal', () => {
     expect(mockShellOpenExternal).not.toHaveBeenCalled();
   });
 
+  test.each(['%00', '%0A', '%2E', '%2F', '%5C'])(
+    'potentially-malicious urls *should* be blocked, whatever the escape case (%s)',
+    async (escape) => {
+      await openExternal(`https://hello.com/${escape}${escape}/whatever`);
+
+      expect(mockShowNavigationBlockedMessage).toHaveBeenCalledTimes(1);
+      expect(mockShellOpenExternal).not.toHaveBeenCalled();
+    },
+  );
+
   test('malformed urls *should* be blocked', async () => {
     await openExternal('zombocom');
 

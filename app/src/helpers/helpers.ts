@@ -67,9 +67,11 @@ const SHELL_SAFETY_FEEDBACK_STR =
 function isUrlShellSafe(
   urlToGo: string,
 ): { blocked: false } | { blocked: true; reason: string } {
+  const lowercasedUrl = urlToGo.toLowerCase();
+
   let url: URL;
   try {
-    url = new URL(urlToGo.toLowerCase());
+    url = new URL(lowercasedUrl);
   } catch {
     return {
       blocked: true,
@@ -86,11 +88,11 @@ function isUrlShellSafe(
 
   // https://cwe.mitre.org/data/definitions/177.html
   if (
-    urlToGo.includes('%00') ||
-    urlToGo.includes('%0a') ||
-    urlToGo.includes('%2e') ||
-    urlToGo.includes('%2f') ||
-    urlToGo.includes('%5c')
+    lowercasedUrl.includes('%00') ||
+    lowercasedUrl.includes('%0a') ||
+    lowercasedUrl.includes('%2e') ||
+    lowercasedUrl.includes('%2f') ||
+    lowercasedUrl.includes('%5c')
   ) {
     return {
       blocked: true,
