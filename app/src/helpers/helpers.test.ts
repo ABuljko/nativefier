@@ -349,6 +349,22 @@ describe('openExternal', () => {
     },
   );
 
+  test.each([
+    ['NUL', 0x00],
+    ['TAB', 0x09],
+    ['LF', 0x0a],
+    ['CR', 0x0d],
+    ['DEL', 0x7f],
+  ])(
+    'urls with a literal %s control character *should* be blocked',
+    async (_name, code) => {
+      await openExternal(`https://hello.com/wor${String.fromCharCode(code)}ld`);
+
+      expect(mockShowNavigationBlockedMessage).toHaveBeenCalledTimes(1);
+      expect(mockShellOpenExternal).not.toHaveBeenCalled();
+    },
+  );
+
   test('malformed urls *should* be blocked', async () => {
     await openExternal('zombocom');
 

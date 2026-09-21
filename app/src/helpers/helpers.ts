@@ -86,6 +86,18 @@ function isUrlShellSafe(
     };
   }
 
+  if (
+    [...urlToGo].some((char) => {
+      const code = char.charCodeAt(0);
+      return code <= 0x1f || code === 0x7f;
+    })
+  ) {
+    return {
+      blocked: true,
+      reason: `URL might be malicious. ${SHELL_SAFETY_FEEDBACK_STR}`,
+    };
+  }
+
   // https://cwe.mitre.org/data/definitions/177.html
   if (
     lowercasedUrl.includes('%00') ||
