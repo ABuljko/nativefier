@@ -1,7 +1,6 @@
 import * as path from 'path';
 
-import * as electronGet from '@electron/get';
-import electronPackager from 'electron-packager';
+import type { Options } from '@electron/packager';
 import * as fs from 'fs-extra';
 import * as log from 'loglevel';
 
@@ -207,8 +206,11 @@ export async function buildNativefierApp(
     "\nPackaging... This will take a few seconds, maybe minutes if the requested Electron isn't cached yet...",
   );
   trimUnprocessableOptions(options);
+  // These are ESM-only and Jest can't require() them, so we import() them here
+  const electronGet = await import('@electron/get');
+  const { packager } = await import('@electron/packager');
   electronGet.initializeProxy(); // https://github.com/electron/get#proxies
-  const appPathArray = await electronPackager(options.packager);
+  const appPathArray = await packager(options.packager as Options);
 
   log.info('\nFinalizing build...');
   let appPath = getAppPath(appPathArray);
