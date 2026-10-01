@@ -7,8 +7,8 @@
   "engines_README": "Bumping the minimum required Node version? You must bump: 1. package.json -> engines.node, 2. package.json -> devDependencies.@types/node , 3. tsconfig.json -> {target, lib} , 4. .github/workflows/ci.yml -> node-version , 5. .nvmrc",
   "engines_READMEforEnginesNode": "Here in engines.node, we require a version as old as possible, for Nativefier to be easily installable using the stock Node.js shipped by conservative Linux distros. It's a balancing act between this, and our own dependencies requiring more a recent Node; as much as possible, try to keep supporting Debian stable; https://packages.debian.org/search?suite=stable&keywords=nodejs",
   "engines": {
-    "node": ">= 20.18.1",
-    "npm": ">= 10.8.2"
+    "node": ">= 22.12.0",
+    "npm": ">= 10.9.0"
   },
   "keywords": [
     "desktop",
@@ -77,7 +77,7 @@
     "@types/hasbin": "^1.2.2",
     "@types/jest": "^29.5.14",
     "@types/ncp": "^2.0.8",
-    "@types/node": "^20.19.43",
+    "@types/node": "^22.20.4",
     "@types/page-icon": "^0.3.6",
     "@types/tmp": "^0.2.6",
     "@types/yargs": "^17.0.35",

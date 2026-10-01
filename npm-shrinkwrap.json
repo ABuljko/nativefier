@@ -31,7 +31,7 @@
         "@types/hasbin": "^1.2.2",
         "@types/jest": "^29.5.14",
         "@types/ncp": "^2.0.8",
-        "@types/node": "^20.19.43",
+        "@types/node": "^22.20.4",
         "@types/page-icon": "^0.3.6",
         "@types/tmp": "^0.2.6",
         "@types/yargs": "^17.0.35",
@@ -51,8 +51,8 @@
         "webpack-cli": "^5.1.4"
       },
       "engines": {
-        "node": ">= 20.18.1",
-        "npm": ">= 10.8.2"
+        "node": ">= 22.12.0",
+        "npm": ">= 10.9.0"
       }
     },
     "node_modules/@babel/code-frame": {
@@ -1768,9 +1768,9 @@
       }
     },
     "node_modules/@types/node": {
-      "version": "20.19.43",
-      "resolved": "https://registry.npmjs.org/@types/node/-/node-20.19.43.tgz",
-      "integrity": "sha512-6oYBAi5ikg4Pl+kGsoYtawUMBT2zZMCvPNF7pVLnHZfd1zf38DRiWn/gT01RYCdUqkv7Fhr+C9ot4/tb+2sVvA==",
+      "version": "22.20.4",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-22.20.4.tgz",
+      "integrity": "sha512-zJRE40jpHtKqE/C4fgHrAKQLJuSpzEnP9ff9Y7YtoR3Wd2pwqzlekDeEuUQXjRd+QCYnVnNwuJYmhdk9XV8gvA==",
       "license": "MIT",
       "dependencies": {
         "undici-types": "~6.21.0"
