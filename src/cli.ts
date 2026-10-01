@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 
 import debug from 'debug';
-import electronPackager from 'electron-packager';
+import type { Win32MetadataOptions } from '@electron/packager';
 import * as log from 'loglevel';
 import yargs from 'yargs';
 
@@ -487,8 +487,7 @@ export function initArgs(argv: string[]): yargs.Argv<RawOptions> {
       type: 'string',
     })
     .option('win32metadata', {
-      coerce: (value: string) =>
-        parseJson<electronPackager.Win32MetadataOptions>(value),
+      coerce: (value: string) => parseJson<Win32MetadataOptions>(value),
       description:
         '(windows only) a JSON string of key/value pairs (ProductName, InternalName, FileDescription) to embed as executable metadata',
     })

@@ -48,7 +48,7 @@ what you need to know to get started hacking on Nativefier.
 
 ## Setup
 
-You need Node.js ≥ 20.18.1 and npm ≥ 10.8.2 (see `package.json` / `engines`).
+You need Node.js ≥ 22.12.0 and npm ≥ 10.9.0 (see `package.json` / `engines`).
 The `.nvmrc` pins the Node major we build & test against, so `nvm use` works.
 
 First, clone the project:

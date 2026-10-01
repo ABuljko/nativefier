@@ -1,13 +1,16 @@
-import { CreateOptions } from '@electron/asar';
+import type { Options, Win32MetadataOptions } from '@electron/packager';
 import { randomUUID } from 'crypto';
-import * as electronPackager from 'electron-packager';
 
 export type TitleBarValue =
   'default' | 'hidden' | 'hiddenInset' | 'customButtonsOnHover';
 export type TrayValue = 'true' | 'false' | 'start-in-tray';
 
-export interface ElectronPackagerOptions extends electronPackager.Options {
+export interface ElectronPackagerOptions extends Omit<
+  Options,
+  'arch' | 'icon' | 'platform'
+> {
   arch: string;
+  icon?: string;
   portable: boolean;
   platform?: string;
   targetUrl: string;
@@ -130,7 +133,7 @@ export type RawOptions = {
   appCopyright?: string;
   appVersion?: string;
   arch?: string;
-  asar?: boolean | CreateOptions;
+  asar?: Options['asar'];
   backgroundColor?: string;
   basicAuthPassword?: string;
   basicAuthUsername?: string;
@@ -194,7 +197,7 @@ export type RawOptions = {
   versionString?: string;
   widevine?: boolean;
   width?: number;
-  win32metadata?: electronPackager.Win32MetadataOptions;
+  win32metadata?: Win32MetadataOptions;
   x?: number;
   y?: number;
   zoom?: number;

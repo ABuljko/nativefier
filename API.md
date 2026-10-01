@@ -176,9 +176,9 @@ Specifies if the source code within the nativefied app should be packaged into a
 -e, --electron-version <value>
 ```
 
-The Electron version to build the app with, without the `v` (e.g. `25.9.8`).
+The Electron version to build the app with, without the `v` (e.g. `44.5.1`).
 Defaults to the version Nativefier bundles (`DEFAULT_ELECTRON_VERSION` in
-[`src/constants.ts`](src/constants.ts), currently `25.9.8`).
+[`src/constants.ts`](src/constants.ts), currently `44.5.1`).
 See https://github.com/electron/electron/releases for the available versions.
 
 #### [global-shortcuts]
@@ -1021,7 +1021,7 @@ const options = {
   name: 'Web WhatsApp', // inferred from the page title if not specified
   platform: 'darwin', // defaults to the current system
   arch: 'x64', // defaults to the current system
-  electronVersion: '25.9.8', // defaults to the bundled Electron
+  electronVersion: '44.5.1', // defaults to the bundled Electron
   out: '.',
   overwrite: false,
   conceal: false, // package the app source into an asar archive

@@ -188,14 +188,14 @@ export function getDefaultWindowOptions(
 export function goBack(): void {
   log.debug('onGoBack');
   withFocusedWindow((focusedWindow) => {
-    focusedWindow.webContents.goBack();
+    focusedWindow.webContents.navigationHistory.goBack();
   });
 }
 
 export function goForward(): void {
   log.debug('onGoForward');
   withFocusedWindow((focusedWindow) => {
-    focusedWindow.webContents.goForward();
+    focusedWindow.webContents.navigationHistory.goForward();
   });
 }
 
