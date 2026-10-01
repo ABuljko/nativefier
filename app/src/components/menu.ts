@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import path from 'path';
 
 import {
+  BaseWindow,
   BrowserWindow,
   clipboard,
   Menu,
@@ -99,14 +100,21 @@ export function generateMenu(
         accelerator: 'CmdOrCtrl+Shift+C',
         click: (): void => {
           // We use clipboard.readText to strip down formatting
-          const text = clipboard.readText('selection');
-          clipboard.writeText(cleanupPlainText(text), 'clipboard');
+          // clipboard.selection only exists on Linux, elsewhere we fall back to the main clipboard
+          (clipboard.selection ?? clipboard)
+            .readText()
+            .then((text) => clipboard.writeText(cleanupPlainText(text)))
+            .catch((err) => log.error('Copy as Plain Text ERROR', err));
         },
       },
       {
         label: 'Copy Current URL',
         accelerator: 'CmdOrCtrl+L',
-        click: (): void => clipboard.writeText(getCurrentURL()),
+        click: (): void => {
+          clipboard
+            .writeText(getCurrentURL())
+            .catch((err) => log.error('Copy Current URL ERROR', err));
+        },
       },
       {
         label: 'Paste',
@@ -130,17 +138,16 @@ export function generateMenu(
         label: 'Clear App Data',
         click: (
           item: MenuItem,
-          focusedWindow: BrowserWindow | undefined,
+          focusedWindow: BaseWindow | undefined,
         ): void => {
           log.debug('Clear App Data.click', {
             item,
             focusedWindow,
             mainWindow,
           });
-          if (!focusedWindow) {
-            focusedWindow = mainWindow;
-          }
-          clearAppData(focusedWindow).catch((err) =>
+          const window =
+            focusedWindow instanceof BrowserWindow ? focusedWindow : mainWindow;
+          clearAppData(window).catch((err) =>
             log.error('clearAppData ERROR', err),
           );
         },
@@ -189,7 +196,7 @@ export function generateMenu(
         visible: mainWindow.isFullScreenable() || isOSX(),
         click: (
           item: MenuItem,
-          focusedWindow: BrowserWindow | undefined,
+          focusedWindow: BaseWindow | undefined,
         ): void => {
           log.debug('Toggle Full Screen.click()', {
             item,
@@ -256,12 +263,11 @@ export function generateMenu(
       {
         label: 'Toggle Developer Tools',
         accelerator: isOSX() ? 'Alt+Cmd+I' : 'Ctrl+Shift+I',
-        click: (item: MenuItem, focusedWindow: BrowserWindow | undefined) => {
+        click: (item: MenuItem, focusedWindow: BaseWindow | undefined) => {
           log.debug('Toggle Developer Tools.click()', { item, focusedWindow });
-          if (!focusedWindow) {
-            focusedWindow = mainWindow;
-          }
-          focusedWindow.webContents.toggleDevTools();
+          const window =
+            focusedWindow instanceof BrowserWindow ? focusedWindow : mainWindow;
+          window.webContents.toggleDevTools();
         },
       },
     );
