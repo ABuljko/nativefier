@@ -128,6 +128,19 @@ describe('Nativefier', () => {
       await checkApp(appPath, options);
     },
   );
+
+  test('refuses a platform/arch the Electron version has no official build for', async () => {
+    const options: RawOptions = {
+      arch: 'armv7l',
+      name: 'github',
+      out: getTempDir('integtest'),
+      platform: 'linux',
+      targetUrl: 'https://github.com/',
+    };
+    await expect(buildNativefierApp(options)).rejects.toThrow(
+      `Electron ${DEFAULT_ELECTRON_VERSION} has no official linux/armv7l build`,
+    );
+  });
 });
 
 function generateShortcutsFile(dir: string): string {

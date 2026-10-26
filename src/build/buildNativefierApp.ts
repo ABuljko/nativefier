@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import type { Options } from '@electron/packager';
+import type { Options, SupportedPlatform } from '@electron/packager';
 import * as fs from 'fs-extra';
 import * as log from 'loglevel';
 
@@ -124,6 +124,34 @@ function trimUnprocessableOptions(options: AppOptions): void {
   }
 }
 
+/**
+ * @electron/packager skips a platform/arch the Electron version has no official
+ * build for and returns no app path, so fail early with the actual reason
+ */
+async function assertOfficialBuildExists(options: AppOptions): Promise<void> {
+  const { platform, arch, electronVersion, download } = options.packager;
+  // Like packager, don't second-guess custom mirrors, which may host unofficial builds
+  if (
+    !platform ||
+    !electronVersion ||
+    (download && 'mirrorOptions' in download)
+  ) {
+    return;
+  }
+  const { allOfficialArchsForPlatformAndVersion } =
+    await import('@electron/packager');
+  const officialArchs: string[] | undefined =
+    allOfficialArchsForPlatformAndVersion(
+      platform as SupportedPlatform,
+      electronVersion,
+    );
+  if (officialArchs && !officialArchs.includes(arch)) {
+    throw new Error(
+      `Electron ${electronVersion} has no official ${platform}/${arch} build. Pick another --arch, or an --electron-version that has one.`,
+    );
+  }
+}
+
 function getOSRunHelp(platform?: string): string {
   if (platform === 'win32') {
     return `the contained .exe file.`;
@@ -190,6 +218,7 @@ export async function buildNativefierApp(
       );
     }
   }
+  await assertOfficialBuildExists(options);
 
   log.info('\nPreparing Electron app...');
   const tmpPath = getTempDir('app', 0o755);
