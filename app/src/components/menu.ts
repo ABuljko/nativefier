@@ -111,9 +111,12 @@ export function generateMenu(
         label: 'Copy Current URL',
         accelerator: 'CmdOrCtrl+L',
         click: (): void => {
-          clipboard
-            .writeText(getCurrentURL())
-            .catch((err) => log.error('Copy Current URL ERROR', err));
+          const url = getCurrentURL();
+          if (url !== undefined) {
+            clipboard
+              .writeText(url)
+              .catch((err) => log.error('Copy Current URL ERROR', err));
+          }
         },
       },
       {
