@@ -300,7 +300,7 @@ export function generateMenu(
       {
         label: `Built with Nativefier v${nativefierVersion}`,
         click: (): void => {
-          openExternal('https://github.com/nativefier/nativefier').catch(
+          openExternal('https://github.com/ABuljko/nativefier').catch(
             (err: unknown): void =>
               log.error(
                 'Built with Nativefier v${nativefierVersion}.click ERROR',
@@ -312,7 +312,7 @@ export function generateMenu(
       {
         label: 'Report an Issue',
         click: (): void => {
-          openExternal('https://github.com/nativefier/nativefier/issues').catch(
+          openExternal('https://github.com/ABuljko/nativefier/issues').catch(
             (err: unknown): void =>
               log.error('Report an Issue.click ERROR', err),
           );

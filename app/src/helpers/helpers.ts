@@ -61,8 +61,8 @@ const URL_PROTOCOLS_NOCONFIRMATION = [
   ...URL_PROTOCOLS_NOCONFIRMATION_EXTRA,
 ];
 const SHELL_SAFETY_FEEDBACK_STR =
-  'If you believe this URL should open, you might be right, and our validation might be excessive.' +
-  'Please share this error & URL at https://github.com/nativefier/nativefier/issues/1459';
+  'If you believe this URL should open, you might be right, and our validation might be excessive. ' +
+  'Please share this error & URL at https://github.com/ABuljko/nativefier/issues';
 
 function isUrlShellSafe(
   urlToGo: string,
