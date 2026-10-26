@@ -125,10 +125,10 @@ export function createNewWindow(
   return window;
 }
 
-export function getCurrentURL(): string {
+export function getCurrentURL(): string | undefined {
   return withFocusedWindow((focusedWindow) =>
     focusedWindow.webContents.getURL(),
-  ) as unknown as string;
+  );
 }
 
 export function getDefaultWindowOptions(
