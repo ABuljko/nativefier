@@ -22,9 +22,7 @@ usable on Windows, macOS and Linux.
 This repository continues [the original Nativefier](https://github.com/nativefier/nativefier),
 which its authors [retired](https://github.com/nativefier/nativefier/issues/1577)
 after release 52.0.0. Development here picks up from that release: dependencies
-are kept current, and bugs get fixed. The original motivation still holds — not
-having to Alt-Tab to a browser and dig through tabs to reach Messenger or
-WhatsApp Web ([HN thread](https://news.ycombinator.com/item?id=10930718)).
+are kept current, and bugs get fixed.
 
 Features:
 
@@ -36,8 +34,8 @@ Features:
 
 Requirements:
 
-- [Node.js](https://nodejs.org/) ≥ 20.18.1 and npm ≥ 10.8.2
-- macOS 10.13+ / Windows 10+ / Linux, to *build* apps
+- [Node.js](https://nodejs.org/) ≥ 22.12.0 and npm ≥ 10.9.0
+- macOS 11+ / Windows 10+ / Linux, to *build* apps
   (built apps run on whatever the bundled Electron supports)
 
 Install this version from source:
@@ -56,7 +54,7 @@ Optional dependencies:
 
 - [ImageMagick](https://imagemagick.org/) or [GraphicsMagick](http://www.graphicsmagick.org/) to convert icons.
   Be sure `convert` + `identify` or `gm` are in your `$PATH`.
-- [Wine](https://www.winehq.org/) to build Windows apps from non-Windows platforms.
+- [Wine](https://www.winehq.org/) to `--upgrade` Windows apps from non-Windows platforms.
   Be sure `wine` is in your `$PATH`.
 
 <details>
@@ -86,7 +84,7 @@ Optional dependencies:
 
 To create an app for medium.com, simply `nativefier 'medium.com'`
 
-Nativefier will try to determine the app name, and well as other options that you
+Nativefier will try to determine the app name, as well as other options that you
 can override. For example, to override the name, `nativefier --name 'My Medium App' 'medium.com'`
 
 **Read the [API docs](API.md) or run `nativefier --help`**
@@ -97,6 +95,12 @@ to learn about command-line flags and configure your app.
 **See [CATALOG.md](CATALOG.md) for site-specific ideas & workarounds**.
 
 If this doesn’t help, go look at the [issue tracker](https://github.com/ABuljko/nativefier/issues).
+
+## Contributing
+
+Contributions and issue reports are always welcome and encouraged! See
+[CONTRIBUTING.md](.github/CONTRIBUTING.md) for what to include in an issue and
+how to get a pull request ready.
 
 ## Development
 
