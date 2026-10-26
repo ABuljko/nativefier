@@ -685,5 +685,6 @@ if (require.main === module) {
 
   buildNativefierApp(options).catch((error) => {
     log.error('Error during build. Run with --verbose for details.', error);
+    process.exitCode = 1;
   });
 }
