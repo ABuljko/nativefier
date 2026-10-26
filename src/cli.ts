@@ -52,7 +52,7 @@ export function initArgs(argv: string[]): yargs.Argv<RawOptions> {
     )
     .example(
       'for more examples and help...',
-      'See https://github.com/nativefier/nativefier/blob/master/CATALOG.md',
+      'See https://github.com/ABuljko/nativefier/blob/main/CATALOG.md',
     )
     .positional('targetUrl', {
       description:
@@ -88,7 +88,7 @@ export function initArgs(argv: string[]): yargs.Argv<RawOptions> {
     })
     .option('global-shortcuts', {
       description:
-        'define global keyboard shortcuts via a JSON file; See https://github.com/nativefier/nativefier/blob/master/API.md#global-shortcuts',
+        'define global keyboard shortcuts via a JSON file; See https://github.com/ABuljko/nativefier/blob/main/API.md#global-shortcuts',
       normalize: true,
       type: 'string',
     })
@@ -126,7 +126,7 @@ export function initArgs(argv: string[]): yargs.Argv<RawOptions> {
     .option('portable', {
       default: false,
       description:
-        'make the app store its user data in the app folder; WARNING: see https://github.com/nativefier/nativefier/blob/master/API.md#portable for security risks',
+        'make the app store its user data in the app folder; WARNING: see https://github.com/ABuljko/nativefier/blob/main/API.md#portable for security risks',
       type: 'boolean',
     })
     .option('upgrade', {
@@ -170,14 +170,14 @@ export function initArgs(argv: string[]): yargs.Argv<RawOptions> {
     })
     .option('bookmarks-menu', {
       description:
-        'create a bookmarks menu (via JSON file); See https://github.com/nativefier/nativefier/blob/master/API.md#bookmarks-menu',
+        'create a bookmarks menu (via JSON file); See https://github.com/ABuljko/nativefier/blob/main/API.md#bookmarks-menu',
       normalize: true,
       type: 'string',
     })
     .option('browserwindow-options', {
       coerce: parseJson,
       description:
-        'override Electron BrowserWindow options (via JSON string); see https://github.com/nativefier/nativefier/blob/master/API.md#browserwindow-options',
+        'override Electron BrowserWindow options (via JSON string); see https://github.com/ABuljko/nativefier/blob/main/API.md#browserwindow-options',
     })
     .option('disable-context-menu', {
       default: false,
