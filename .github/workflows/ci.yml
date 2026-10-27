@@ -14,7 +14,6 @@ on:
 #   3. tsconfig.json -> {target, lib}
 #   4. .github/workflows/ci.yml -> node-version
 #   5. .nvmrc
-# - Bumping the *maximum* tested Node version? You must bump also: publish.yml
 jobs:
   lint:
     runs-on: ubuntu-latest
