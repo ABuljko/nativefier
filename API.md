@@ -1,96 +1,5 @@
 # API
 
-## Table of Contents
-
-- [Packaging Squirrel-based installers](#packaging-squirrel-based-installers)
-- [Command Line](#command-line)
-  - [Target Url](#target-url)
-  - [[dest]](#dest)
-  - [Help](#help)
-  - [Version](#version)
-  - [App Creation Options](#app-creation-options)
-    - [[arch]](#arch)
-    - [[conceal]](#conceal)
-    - [[electron-version]](#electron-version)
-    - [[global-shortcuts]](#global-shortcuts)
-    - [[icon]](#icon)
-    - [[name]](#name)
-    - [[no-overwrite]](#no-overwrite)
-    - [[platform]](#platform)
-    - [[portable]](#portable)
-    - [[upgrade]](#upgrade)
-    - [[widevine]](#widevine)
-  - [App Window Options](#app-window-options)
-    - [[always-on-top]](#always-on-top)
-    - [[background-color]](#background-color)
-    - [[bookmarks-menu]](#bookmarks-menu)
-    - [[browserwindow-options]](#browserwindow-options)
-    - [[disable-context-menu]](#disable-context-menu)
-    - [[disable-dev-tools]](#disable-dev-tools)
-    - [[full-screen]](#full-screen)
-    - [[height]](#height)
-    - [[hide-window-frame]](#hide-window-frame)
-    - [[max-height]](#max-height)
-    - [[max-width]](#max-width)
-    - [[maximize]](#maximize)
-    - [[min-height]](#min-height)
-    - [[min-width]](#min-width)
-    - [[process-envs]](#process-envs)
-    - [[show-menu-bar]](#show-menu-bar)
-    - [[single-instance]](#single-instance)
-    - [[tray]](#tray)
-    - [[width]](#width)
-    - [[x]](#x)
-    - [[y]](#y)
-    - [[zoom]](#zoom)
-  - [Internal Browser Options](#internal-browser-options)
-    - [[file-download-options]](#file-download-options)
-    - [[inject]](#inject)
-    - [[lang]](#lang)
-    - [[user-agent]](#user-agent)
-    - [[user-agent-honest]](#user-agent-honest)
-  - [Internal Browser Cache Options](#internal-browser-cache-options)
-    - [[clear-cache]](#clear-cache)
-    - [[disk-cache-size]](#disk-cache-size)
-  - [URL Handling Options](#url-handling-options)
-    - [[block-external-urls]](#block-external-urls)
-    - [[internal-urls]](#internal-urls)
-      - [Internal Login Pages](#internal-login-pages)
-    - [[strict-internal-urls]](#strict-internal-urls)
-    - [[proxy-rules]](#proxy-rules)
-  - [Auth Options](#auth-options)
-    - [[[basic-auth-username] and [basic-auth-password]]](#basic-auth-username-and-basic-auth-password)
-  - [Graphics Options](#graphics-options)
-    - [[disable-gpu]](#disable-gpu)
-    - [[enable-es3-apis]](#enable-es3-apis)
-    - [[ignore-gpu-blacklist]](#ignore-gpu-blacklist)
-  - [(In)Security Options](#insecurity-options)
-    - [[disable-old-build-warning-yesiknowitisinsecure]](#disable-old-build-warning-yesiknowitisinsecure)
-    - [[ignore-certificate]](#ignore-certificate)
-    - [[insecure]](#insecure)
-  - [Platform-Specific Options](#platform-specific-options)
-    - [[app-copyright]](#app-copyright)
-    - [[app-version]](#app-version)
-    - [[bounce]](#bounce)
-    - [[build-version]](#build-version)
-    - [[counter]](#counter)
-    - [[darwin-dark-mode-support]](#darwin-dark-mode-support)
-    - [[fast-quit]](#fast-quit)
-    - [[title-bar-style]](#title-bar-style)
-    - [[win32metadata]](#win32metadata)
-  - [Debug Options](#debug-options)
-    - [[crash-reporter]](#crash-reporter)
-    - [[verbose]](#verbose)
-    - [[quiet]](#quiet)
-- [Programmatic API](#programmatic-api)
-- [Accessing The Electron Session](#accessing-the-electron-session)
-  - [Important Note On funcArgs](#important-note-on-funcargs)
-  - [session-interaction-reply](#session-interaction-reply)
-  - [Request IDs](#request-ids)
-  - [Errors](#errors)
-  - [Complex Return Values](#complex-return-values)
-  - [Example](#example)
-
 ## Packaging Squirrel-based installers
 
 See [PR #744 - Support packaging nativefier applications into Squirrel-based installers](https://github.com/nativefier/nativefier/pull/744)
@@ -293,10 +202,6 @@ Notes:
 - When packaging for macOS, must be a `.icns` or a `.png` file if the [optional dependencies](README.md#installation) are installed.
   If your `PATH` has our image-conversion dependencies (`iconutil`, and either ImageMagick `convert` + `identify`, or GraphicsMagick `gm`), Nativefier will automatically convert the `.png` to a `.icns` for you.
 
-Alternative to macOS users: [iConvertIcons](https://iconverticons.com/online/) can be used to convert `.pngs`, though it can be quite cumbersome.
-
-To retrieve the `.icns` file from the downloaded file, extract it first and press File > Get Info. Then select the icon in the top left corner of the info window and press `⌘-C`. Open Preview and press File > New from clipboard and save the `.icns` file. It took me a while to figure out how to do that and question why a `.icns` file was not simply provided in the downloaded archive.
-
 #### [name]
 
 ```
@@ -359,7 +264,7 @@ _IMPORTANT SECURITY NOTICE_: when creating a portable app, all data accumulated 
 
 This option will attempt to extract all existing options from the old app, and upgrade it using the current Nativefier CLI.
 
-_Important data safety note_: This action is an in-place upgrade, and will REPLACE the current application. In case this feature does not work as intended or as the user may wish, it is advised to make a backup of the app to be upgraded before using, or specify an alternate directory as you would when creating a new file.\*\*
+_Important data safety note_: This action is an in-place upgrade, and will REPLACE the current application. In case this feature does not work as intended or as the user may wish, it is advised to make a backup of the app to be upgraded before using, or specify an alternate directory as you would when creating a new file.
 
 The provided path must be the "executable" of an application packaged with a previous version of Nativefier, and to be upgraded to the latest version of Nativefier. "Executable" means: the `.exe` file on Windows, the executable on Linux, or the `.app` on macOS. The executable must be living in the original context where it was generated (i.e., on Windows and Linux, the exe file must still be in the folder containing the generated `resources` directory).
 
@@ -1004,8 +909,8 @@ which takes the same options as the CLI flags (camelCased) and returns a promise
 resolving with the path of the app it built.
 
 ```bash
-# install and save to package.json
-npm install --save nativefier
+# install from this repository and save to package.json
+npm install --save github:ABuljko/nativefier
 ```
 
 In your `.js` file:
@@ -1013,46 +918,10 @@ In your `.js` file:
 ```javascript
 const { buildNativefierApp } = require('nativefier');
 
-// A few of the available options; they mirror the CLI flags, camelCased.
-// Only `targetUrl` is required, everything else falls back to the same
-// defaults the CLI uses.
-const options = {
-  targetUrl: 'https://web.whatsapp.com', // required
+buildNativefierApp({
+  targetUrl: 'https://web.whatsapp.com', // the only required option
   name: 'Web WhatsApp', // inferred from the page title if not specified
-  platform: 'darwin', // defaults to the current system
-  arch: 'x64', // defaults to the current system
-  electronVersion: '44.5.1', // defaults to the bundled Electron
-  out: '.',
-  overwrite: false,
-  conceal: false, // package the app source into an asar archive
-  icon: '~/Desktop/icon.png',
-  counter: false,
-  bounce: false,
-  width: 1280,
-  height: 800,
-  showMenuBar: false,
-  fastQuit: false,
-  userAgent: 'Mozilla ...', // inferred for the current system if not specified
-  userAgentHonest: false,
-  ignoreCertificate: false,
-  ignoreGpuBlacklist: false,
-  enableEs3Apis: false,
-  internalUrls: '.*?',
-  strictInternalUrls: false,
-  blockExternalUrls: false,
-  insecure: false,
-  zoom: 1.0,
-  singleInstance: false,
-  clearCache: false,
-  fileDownloadOptions: {
-    saveAs: true, // always show "Save As" dialog
-  },
-  processEnvs: {
-    GOOGLE_API_KEY: '<your-google-api-key>',
-  },
-};
-
-buildNativefierApp(options)
+})
   .then((appPath) => {
     console.log('App has been nativefied to', appPath);
   })
@@ -1066,208 +935,44 @@ The complete list of accepted options is the `RawOptions` type, declared in
 
 ## Accessing The Electron Session
 
-Sometimes there are Electron features that are exposed via the [Electron `session` API](https://www.electronjs.org/docs/api/session), that may not be exposed via Nativefier options. These can be accessed with an injected javascript file (via the `--inject` command line argument when building your application). Within that javascript file, you may send an ipcRenderer `session-interaction` event, and listen for a `session-interaction-reply` event to get any result. Session properties and functions can be accessed via this event. This event takes an object as an argument with the desired interaction to be performed.
+Some Electron features are exposed through the [Electron `session` API](https://www.electronjs.org/docs/api/session) but not through Nativefier options. A script injected with `--inject` can reach them by sending a `session-interaction` IPC event, and listening for the `session-interaction-reply` event.
 
-**Warning**: using this feature in an `--inject` script means using Electron's `session` API, which is not a standard web API and subject to potential [Breaking Changes](https://www.electronjs.org/docs/breaking-changes) at each major Electron upgrade.
+**Warning**: `session` is not a standard web API, and is subject to [breaking changes](https://www.electronjs.org/docs/breaking-changes) at each major Electron upgrade.
 
-To get a `session` property:
+A request either reads or sets a `property`, or calls a `func`:
 
 ```javascript
 const electron = require('electron');
 
-const request = {
+// Get a property
+electron.ipcRenderer.send('session-interaction', {
   property: 'availableSpellCheckerLanguages',
-};
-electron.ipcRenderer.send('session-interaction', request);
-```
+});
 
-To set a `session` property:
-
-```javascript
-const electron = require('electron');
-
-const request = {
+// Set a property
+electron.ipcRenderer.send('session-interaction', {
   property: 'spellCheckerEnabled',
   propertyValue: true,
-};
-electron.ipcRenderer.send('session-interaction', request);
-```
+});
 
-To call a `session` function:
-
-```javascript
-const electron = require('electron');
-
-const request = {
-  func: 'clearCache',
-};
-electron.ipcRenderer.send('session-interaction', request);
-```
-
-To call a `session` function, with arguments:
-
-```javascript
-const electron = require('electron');
-
-const request = {
+// Call a function; funcArgs is always an array, even for a single argument
+electron.ipcRenderer.send('session-interaction', {
   func: 'setDownloadPath',
-  funcArgs: [`/home/user/downloads`],
-};
-electron.ipcRenderer.send('session-interaction', request);
-```
-
-If neither a `func` nor a `property` is provided in the event, an error will be returned.
-
-### Important Note On funcArgs
-
-PLEASE NOTE: `funcArgs` is ALWAYS an array of arguments to be passed to the function, even if it is just one argument. If `funcArgs` is omitted from a request with a `func` provided, no arguments will be passed.
-
-### session-interaction-reply
-
-The results of the call, if desired, can be accessed one of two ways. Either you can listen for a `session-interaction-reply` event, and access the resulting value like so:
-
-```javascript
-const electron = require('electron');
-
-const request = {
-  property: 'availableSpellCheckerLanguages',
-};
-electron.ipcRenderer.send('session-interaction', request);
-
-electron.ipcRenderer.on('session-interaction-reply', (event, result) => {
-  console.log('session-interaction-reply', event, result.value);
+  funcArgs: ['/home/user/downloads'],
 });
 ```
 
-Or the result can be retrieved synchronously, though this is not recommended as it may cause slowdowns and freezes in your apps while the app stops and waits for the result to be returned. Heed this [warning from Electron](https://www.electronjs.org/docs/api/ipc-renderer):
-
-> ⚠️ WARNING: Sending a synchronous message will block the whole renderer process until the reply is received, so use this method only as a last resort. It's much better to use the asynchronous version.
+The reply carries the result in `value`, or what went wrong in `error`. Give a request an `id` to tell its reply apart from others:
 
 ```javascript
-const electron = require('electron');
-
-const request = {
-  property: 'availableSpellCheckerLanguages',
-};
-console.log(
-  electron.ipcRenderer.sendSync('session-interaction', request).value,
-);
-```
-
-### Request IDs
-
-If desired, an id for the request may be provided to distinguish between event replies:
-
-```javascript
-const electron = require('electron');
-
-const request = {
-  id: 'availableSpellCheckerLanguages',
-  property: 'availableSpellCheckerLanguages',
-};
-electron.ipcRenderer.send('session-interaction', request);
-
-electron.ipcRenderer.on('session-interaction-reply', (event, result) => {
-  console.log('session-interaction-reply', event, result.id, result.value);
-});
-```
-
-### Errors
-
-If an error occurs while handling the interaction, it will be returned in the `session-interaction-reply` event inside the result:
-
-```javascript
-const electron = require('electron');
-
-electron.ipcRenderer.on('session-interaction-reply', (event, result) => {
-  console.log('session-interaction-reply', event, result.error);
-});
-
 electron.ipcRenderer.send('session-interaction', {
-  func: 'thisFunctionDoesNotExist',
+  id: 'languages',
+  property: 'availableSpellCheckerLanguages',
 });
-```
-
-### Complex Return Values
-
-Due to the nature of how these events are transmitted back and forth, session functions and properties that return full classes or class instances are not supported.
-
-For example, the following code will return an error instead of the expected value:
-
-```javascript
-const electron = require('electron');
-
-const request = {
-  id: 'cookies',
-  property: 'cookies',
-};
-electron.ipcRenderer.send('session-interaction', request);
 
 electron.ipcRenderer.on('session-interaction-reply', (event, result) => {
-  console.log('session-interaction-reply', event, result);
+  console.log(result.id, result.value, result.error);
 });
 ```
 
-### Example
-
-This javascript, when injected as a file via `--inject`, will attempt to call the `isSpellCheckerEnabled` function to make sure the spell checker is enabled, enables it via the `spellCheckerEnabled` property, gets the value of the `availableSpellCheckerLanguages` property, and finally will call `setSpellCheckerLanguages` to set the `fr` language as the preferred spellcheck language if it's supported.
-
-```javascript
-const electron = require('electron');
-
-electron.ipcRenderer.on('session-interaction-reply', (event, result) => {
-  console.log('session-interaction-reply', event, result);
-  switch (result.id) {
-    case 'isSpellCheckerEnabled':
-      console.log('SpellChecker enabled?', result.value);
-      if (result.value === true) {
-        console.log('Getting supported languages...');
-        electron.ipcRenderer.send('session-interaction', {
-          id: 'availableSpellCheckerLanguages',
-          property: 'availableSpellCheckerLanguages',
-        });
-      } else {
-        console.log('SpellChecker disabled. Enabling...');
-        electron.ipcRenderer.send('session-interaction', {
-          id: 'setSpellCheckerEnabled',
-          property: 'spellCheckerEnabled',
-          propertyValue: true,
-        });
-      }
-      break;
-    case 'setSpellCheckerEnabled':
-      console.log(
-        'SpellChecker has now been enabled. Getting supported languages...',
-      );
-      electron.ipcRenderer.send('session-interaction', {
-        id: 'availableSpellCheckerLanguages',
-        property: 'availableSpellCheckerLanguages',
-      });
-      break;
-    case 'availableSpellCheckerLanguages':
-      console.log('Avaliable spellChecker languages:', result.value);
-      if (result.value.indexOf('fr') > -1) {
-        electron.ipcRenderer.send('session-interaction', {
-          id: 'setSpellCheckerLanguages',
-          func: 'setSpellCheckerLanguages',
-          funcArgs: [['fr']],
-        });
-      } else {
-        console.log(
-          "Not changing spellChecker language. 'fr' is not supported.",
-        );
-      }
-      break;
-    case 'setSpellCheckerLanguages':
-      console.log('SpellChecker language was set.');
-      break;
-    default:
-      console.error('Unknown reply id:', result.id);
-  }
-});
-
-electron.ipcRenderer.send('session-interaction', {
-  id: 'isSpellCheckerEnabled',
-  func: 'isSpellCheckerEnabled',
-});
-```
+Functions returning a promise reply once it resolves. A promise that rejects, or a value that can't be sent between processes (e.g. the `cookies` class instance), gets no reply at all.
