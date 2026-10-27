@@ -1,20 +1,52 @@
 #!/usr/bin/env bash
 
-# Updates the changelog and version in the package.json
-# Will also create a commit with these changes locally
+# Updates the changelog, and the version in package.json & npm-shrinkwrap.json
+# Will also create a commit and a tag with these changes locally
 #
 # Usage:
-# ./.github/generate-changelog -- "7.0.0"
+# npm run changelog -- "7.0.0"
 #
 # Prerequisites:
-# - On master branch
+# - On main branch
 # - No uncommitted changes
-#
-# Dependencies:
-# - git-extras: https://github.com/tj/git-extras/blob/master/Installation.md
-# - jq: https://stedolan.github.io/jq/download/
 
 set -eo pipefail
+
+# Checks if we are on the main branch
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [[ "$BRANCH" != 'main' ]]; then
+  echo 'ERROR: not on main branch' >&2
+  exit 1;
+fi
+
+# Checks if there are uncommitted changes
+git diff-index --quiet HEAD -- || (echo 'ERROR: there are uncommitted changes' >&2 && exit 1)
+
+VERSION="$1"
+CURRENT=$(node -p "require('./package.json').version")
+
+# Validates the $VERSION, which must be above the current one and not tagged yet
+SEMVER_REGEX='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
+if ! [[ $VERSION =~ $SEMVER_REGEX ]]; then
+ echo "ERROR: Version '$VERSION' is invalid " >&2
+ exit 1
+fi
+version_key() { IFS=. read -r MAJOR MINOR PATCH <<< "$1"; printf '%06d%06d%06d' "$MAJOR" "$MINOR" "$PATCH"; }
+if ! [[ $(version_key "$VERSION") > $(version_key "$CURRENT") ]]; then
+  echo "ERROR: Version '$VERSION' is not above the current $CURRENT" >&2
+  exit 1
+fi
+if git rev-parse -q --verify "refs/tags/v$VERSION" > /dev/null; then
+  echo "ERROR: tag v$VERSION already exists" >&2
+  exit 1
+fi
+
+# Releases from before this fork have no tags here, so fall back to the last changelog update
+SINCE=$(git describe --tags --abbrev=0 2>/dev/null || git log -1 --format=%H -- CHANGELOG.md)
+if [[ $(git rev-list --count --first-parent "$SINCE..HEAD") == 0 ]]; then
+  echo 'ERROR: no commits since the last release' >&2
+  exit 1
+fi
 
 echo 'HEY YOU. Before you release, here is a report of outdated dependencies.'
 echo ' - Red upgrades fulfill semver and do *not* need any action'
@@ -34,36 +66,31 @@ echo 'HEY YOU, again. Did you run the quick pre-release smoke test? ( npm run te
 echo 'Press any key to continue, or Ctrl+C to abort'
 read -r
 
-# Checks if we are on the master branch
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
-if [[ "$BRANCH" != 'master' ]]; then
-  echo 'ERROR: not on master branch' >&2
-  exit 1;
-fi
+# Until the commit below succeeds, any failure (e.g. the editor exiting with an error) undoes the changes
+trap 'git checkout HEAD -- package.json npm-shrinkwrap.json CHANGELOG.md; rm -f CHANGELOG.md.tmp; echo "ERROR: release aborted, changes undone" >&2' EXIT
 
-# Checks if there are uncommitted changes
-git diff-index --quiet HEAD -- || (echo 'ERROR: there are uncommitted changes' >&2 && exit 1)
+# 1. Update the version in package.json & npm-shrinkwrap.json
+npm version "$VERSION" --no-git-tag-version --ignore-scripts > /dev/null
 
-VERSION="$1"
-
-# Validates the $VERSION
-SEMVER_REGEX='^([0-9]+\.){2}([0-9]+)$'
-if ! [[ $VERSION =~ $SEMVER_REGEX ]]; then
- echo "ERROR: Version '$VERSION' is invalid " >&2
- exit 1
-fi
-
-# 1. Update the version in the package.json
-cat package.json | jq ".version = \"$VERSION\"" > package.json.tmp
-mv package.json.tmp package.json  # workaround for in-place jq editing
-
-# 2. Compile new commits from CHANGELOG.md, and open it in your EDITOR for cleanup
-git changelog CHANGELOG.md --tag "$VERSION"
+# 2. Add the commits since the last release to CHANGELOG.md, and open it in your editor for cleanup
+TITLE="$VERSION / $(date +%Y-%m-%d)"
+{
+  echo
+  echo "$TITLE"
+  echo "${TITLE//?/=}"
+  echo
+  git log --first-parent --format='  * %s' "$SINCE..HEAD"
+  cat CHANGELOG.md
+} > CHANGELOG.md.tmp
+mv CHANGELOG.md.tmp CHANGELOG.md
+eval "$(git var GIT_EDITOR)" CHANGELOG.md
 
 # 3. Commit the changes
 git add CHANGELOG.md
 git add package.json
+git add npm-shrinkwrap.json
 git commit -m "Update changelog for \`v$VERSION\`"
+trap - EXIT
 
 # 4. Create an annotated tag
 git tag -a "v$VERSION" -m "v$VERSION"
@@ -71,9 +98,6 @@ git tag -a "v$VERSION" -m "v$VERSION"
 # 5. List remaining work
 echo
 echo 'Please verify commit & tag look fine in Git, then:'
-echo ' 1. Push:  git push --follow-tags origin master'
-echo ' 2. Create a GitHub Release at https://github.com/nativefier/nativefier/releases ,'
+echo ' 1. Push:  git push --follow-tags origin main'
+echo ' 2. Create a GitHub Release at https://github.com/ABuljko/nativefier/releases ,'
 echo "    using created tag v$VERSION and with title \"Nativefier v$VERSION\" (yes, with a \"v\")."
-echo
-echo 'GitHub Action "publish" will react on the new release, and publish it to npm.'
-echo 'The new version will be visible on npm within a few minutes/hours.'
