@@ -147,7 +147,7 @@ if (appArgs.disableGpu) {
 }
 
 if (appArgs.ignoreGpuBlacklist) {
-  app.commandLine.appendSwitch('ignore-gpu-blacklist');
+  app.commandLine.appendSwitch('ignore-gpu-blocklist');
 }
 
 if (appArgs.enableEs3Apis) {
@@ -158,20 +158,6 @@ if (appArgs.diskCacheSize) {
   app.commandLine.appendSwitch(
     'disk-cache-size',
     appArgs.diskCacheSize.toString(),
-  );
-}
-
-if (appArgs.basicAuthUsername) {
-  app.commandLine.appendSwitch(
-    'basic-auth-username',
-    appArgs.basicAuthUsername,
-  );
-}
-
-if (appArgs.basicAuthPassword) {
-  app.commandLine.appendSwitch(
-    'basic-auth-password',
-    appArgs.basicAuthPassword,
   );
 }
 
