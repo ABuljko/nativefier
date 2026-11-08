@@ -5,6 +5,7 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   Event,
+  MessageBoxOptions,
   MessageBoxReturnValue,
   WebPreferences,
   OnResponseStartedListenerDetails,
@@ -27,17 +28,15 @@ function adjustWindowZoom(adjustment: number): void {
 export function showNavigationBlockedMessage(
   message: string,
 ): Promise<MessageBoxReturnValue> {
-  return new Promise((resolve, reject) => {
-    withFocusedWindow((focusedWindow) => {
-      dialog
-        .showMessageBox(focusedWindow, {
-          message,
-          type: 'error',
-          title: 'Navigation blocked',
-        })
-        .then(resolve, reject);
-    });
-  });
+  const options: MessageBoxOptions = {
+    message,
+    type: 'error',
+    title: 'Navigation blocked',
+  };
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  return focusedWindow
+    ? dialog.showMessageBox(focusedWindow, options)
+    : dialog.showMessageBox(options);
 }
 
 export async function clearAppData(window: BrowserWindow): Promise<void> {

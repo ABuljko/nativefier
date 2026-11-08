@@ -266,22 +266,17 @@ export function nativeTabsSupported(): boolean {
  * Open the given external protocol URL in the desktop's default manner
  * (e.g. `mailto:` URLs in the user's default mail agent), with extra validation.
  */
-export function openExternal(
+export async function openExternal(
   url: string,
   options?: OpenExternalOptions,
 ): Promise<void> {
   const urlShellSafety = isUrlShellSafe(url);
   log.debug('openExternal', { url, options, urlShellSafety });
   if (urlShellSafety.blocked) {
-    return new Promise((resolve) => {
-      showNavigationBlockedMessage(
-        `Navigation blocked to ${url}\n\n${urlShellSafety.reason}`,
-      )
-        .then(() => resolve())
-        .catch((err: unknown) => {
-          throw err;
-        });
-    });
+    await showNavigationBlockedMessage(
+      `Navigation blocked to ${url}\n\n${urlShellSafety.reason}`,
+    );
+    return;
   }
 
   return shell.openExternal(url, options);

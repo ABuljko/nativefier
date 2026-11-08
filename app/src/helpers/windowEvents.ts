@@ -62,7 +62,7 @@ export function onNewWindowHelper(
         showNavigationBlockedMessage(
           `Navigation to external URL blocked by options: ${details.url}`,
         ).catch((err: unknown) => {
-          throw err;
+          log.error('showNavigationBlockedMessage', err);
         });
         return { action: 'deny' };
       } else {
@@ -99,7 +99,7 @@ export function onNewWindowHelper(
   }
 }
 
-export function onWillNavigate(
+export async function onWillNavigate(
   options: WindowOptions,
   event: Event,
   urlToGo: string,
@@ -115,20 +115,13 @@ export function onWillNavigate(
   ) {
     event.preventDefault();
     if (options.blockExternalUrls) {
-      return new Promise((resolve) => {
-        showNavigationBlockedMessage(
-          `Navigation to external URL blocked by options: ${urlToGo}`,
-        )
-          .then(() => resolve())
-          .catch((err: unknown) => {
-            throw err;
-          });
-      });
+      await showNavigationBlockedMessage(
+        `Navigation to external URL blocked by options: ${urlToGo}`,
+      );
     } else {
-      return openExternal(urlToGo);
+      await openExternal(urlToGo);
     }
   }
-  return Promise.resolve(undefined);
 }
 
 export function onWillPreventUnload(
@@ -170,10 +163,9 @@ export function setupNativefierWindow(
 
   injectCSS(window);
 
-  window.webContents.on('will-navigate', (event: Event, url: string) => {
-    onWillNavigate(options, event, url).catch((err) => {
+  window.webContents.on('will-navigate', (event) => {
+    onWillNavigate(options, event, event.url).catch((err) => {
       log.error('window.webContents.on.will-navigate ERROR', err);
-      event.preventDefault();
     });
   });
   window.webContents.on('will-prevent-unload', onWillPreventUnload);
