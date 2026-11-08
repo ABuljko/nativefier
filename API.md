@@ -733,7 +733,7 @@ Passes the enable-es3-apis flag to the Chrome engine, to force the activation of
 --ignore-gpu-blacklist
 ```
 
-Passes the ignore-gpu-blacklist flag to the Chrome engine, to allow for WebGl apps to work on non supported graphics cards.
+Passes the ignore-gpu-blocklist flag to the Chrome engine, to allow for WebGl apps to work on non supported graphics cards.
 
 ### (In)Security Options
 
