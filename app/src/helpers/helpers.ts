@@ -128,8 +128,7 @@ function domainify(url: string): string {
   // Drop the first section if the domain
   const domain = hostname.split('.').slice(1).join('.');
   // Check the length, if it's too short, the hostname was probably the domain
-  // Or if the domain doesn't have a . in it we went too far
-  if (domain.length < 6 || domain.split('.').length === 0) {
+  if (domain.length < 6) {
     return hostname;
   }
   // This SHOULD be the domain, but nothing is 100% guaranteed

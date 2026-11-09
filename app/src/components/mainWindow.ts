@@ -135,7 +135,6 @@ export async function createMainWindow(
       setupNativefierWindow,
       event?.url ?? options.targetUrl,
       true,
-      // mainWindow,
     );
   });
 

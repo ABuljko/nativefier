@@ -173,10 +173,10 @@ export function isArgFormatInvalid(arg: string): boolean {
 }
 
 export function generateRandomSuffix(length = 6): string {
-  const hash = crypto.createHash('md5');
-  // Add a random salt to help avoid collisions
-  hash.update(crypto.randomBytes(256));
-  return hash.digest('hex').substring(0, length);
+  return crypto
+    .randomBytes(Math.ceil(length / 2))
+    .toString('hex')
+    .substring(0, length);
 }
 
 export function getProcessEnvs(val: string): ProcessEnvs | undefined {
