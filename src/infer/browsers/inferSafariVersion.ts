@@ -11,12 +11,32 @@ export type SafariVersion = {
 const SAFARI_VERSIONS_HISTORY_URL =
   'https://en.wikipedia.org/wiki/Safari_version_history';
 
+// Wikimedia answers 403 to clients without a descriptive User-Agent: https://w.wiki/4wJS
+const REQUEST_HEADERS = {
+  'User-Agent': 'nativefier (https://github.com/ABuljko/nativefier)',
+};
+
+function compareVersions(a: string, b: string): number {
+  const partsA = a.split('.').map(Number);
+  const partsB = b.split('.').map(Number);
+  for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
+    const diff = (partsA[i] ?? 0) - (partsB[i] ?? 0);
+    if (diff !== 0) {
+      return diff;
+    }
+  }
+  return 0;
+}
+
 export async function getLatestSafariVersion(
   url = SAFARI_VERSIONS_HISTORY_URL,
 ): Promise<SafariVersion> {
   try {
     log.debug('Grabbing apple version data from', url);
-    const response = await axios.get<string>(url, { timeout: 5000 });
+    const response = await axios.get<string>(url, {
+      timeout: 5000,
+      headers: REQUEST_HEADERS,
+    });
     if (response.status !== 200) {
       throw new Error(`Bad request: Status code ${response.status}`);
     }
@@ -24,49 +44,25 @@ export async function getLatestSafariVersion(
     // This would be easier with an HTML parser, but we're not going to include an extra dependency for something that dumb
     const rawData: string = response.data;
 
-    const majorVersions = [
-      ...rawData.matchAll(
-        /class="mw-headline" id="Safari_[0-9]*">Safari ([0-9]*)</g,
-      ),
-    ].map((match) => match[1]);
+    const majorVersions = [...rawData.matchAll(/id="Safari_(\d+)"/g)]
+      .map((match) => parseInt(match[1], 10))
+      .sort((a, b) => b - a);
+    const versions = [...rawData.matchAll(/>\s*(\d+\.\d+(?:\.\d+)?)\s*</g)].map(
+      (match) => match[1],
+    );
 
-    const majorVersion = parseInt(majorVersions[majorVersions.length - 1]);
-
-    const majorVersionTable = rawData
-      .split('>Release history<')[2]
-      .split('<table')
-      .filter((table) => table.includes(`Safari ${majorVersion}.x`))[0];
-
-    const versionRows = majorVersionTable.split('<tbody')[1].split('<tr');
-
-    let version: string | undefined = undefined;
-    let webkitVersion: string | undefined = undefined;
-
-    for (const versionRow of versionRows.reverse()) {
-      const versionMatch = [
-        ...versionRow.matchAll(/>\s*(([0-9]*\.){2}[0-9])\s*</g),
-      ];
-      if (versionMatch.length > 0 && !version) {
-        version = versionMatch[0][1];
+    for (const majorVersion of majorVersions) {
+      const version = versions
+        .filter((v) => parseInt(v, 10) === majorVersion)
+        .sort(compareVersions)
+        .pop();
+      if (version) {
+        return {
+          majorVersion,
+          version,
+          webkitVersion: DEFAULT_SAFARI_VERSION.webkitVersion,
+        };
       }
-
-      const webkitVersionMatch = [
-        ...versionRow.matchAll(/>\s*(([0-9]*\.){3,4}[0-9])\s*</g),
-      ];
-      if (webkitVersionMatch.length > 0 && !webkitVersion) {
-        webkitVersion = webkitVersionMatch[0][1];
-      }
-      if (version && webkitVersion) {
-        break;
-      }
-    }
-
-    if (version && webkitVersion) {
-      return {
-        majorVersion,
-        version,
-        webkitVersion,
-      };
     }
     return DEFAULT_SAFARI_VERSION;
   } catch (err: unknown) {
