@@ -43,10 +43,7 @@ export function initContextMenu(
           items.push({
             label: 'Open Link in New Tab',
             click: () =>
-              window.emit('new-window-for-tab', {
-                ...new Event('new-window-for-tab'),
-                url: params.linkURL,
-              }),
+              window.emit('new-window-for-tab', { url: params.linkURL }),
           });
         }
       }

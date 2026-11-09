@@ -45,7 +45,6 @@ if (process.argv.includes('--verbose') || safeGetEnv('VERBOSE') === '1') {
   log.setLevel('DEBUG');
   process.traceDeprecation = true;
   process.traceProcessWarnings = true;
-  process.argv.slice(1);
 }
 
 let mainWindow: BrowserWindow;
@@ -388,7 +387,7 @@ async function onReady(): Promise<void> {
   }
   if (
     !appArgs.disableOldBuildWarning &&
-    new Date().getTime() - appArgs.buildDate > OLD_BUILD_WARNING_THRESHOLD_MS
+    Date.now() - appArgs.buildDate > OLD_BUILD_WARNING_THRESHOLD_MS
   ) {
     const oldBuildWarningText =
       appArgs.oldBuildWarningText ||
