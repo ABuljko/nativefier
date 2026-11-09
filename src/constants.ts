@@ -5,19 +5,19 @@ export const DEFAULT_APP_NAME = 'APP';
 // Upgrade both DEFAULT_ELECTRON_VERSION and DEFAULT_CHROME_VERSION together, and
 //   - upgrade app / package.json / "devDependencies" / "electron"
 //   - upgrade       package.json / "devDependencies" / "electron"
-// Doing a *major* upgrade? Read https://github.com/nativefier/nativefier/blob/master/HACKING.md#deps-major-upgrading-electron
+// Doing a *major* upgrade? Read https://github.com/ABuljko/nativefier/blob/main/HACKING.md#deps-major-upgrading-electron
 export const DEFAULT_ELECTRON_VERSION = '44.5.1';
 // https://www.electronjs.org/releases/stable
 export const DEFAULT_CHROME_VERSION = '152.0.7977.130';
 
 // Update each of these periodically
 // https://product-details.mozilla.org/1.0/firefox_versions.json
-export const DEFAULT_FIREFOX_VERSION = '116.0.3';
+export const DEFAULT_FIREFOX_VERSION = '159.0.1';
 
 // https://en.wikipedia.org/wiki/Safari_version_history
 export const DEFAULT_SAFARI_VERSION = {
-  majorVersion: 16,
-  version: '16.6',
+  majorVersion: 26,
+  version: '26.6.1',
   webkitVersion: '605.1.15',
 };
 

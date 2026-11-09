@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { DEFAULT_ELECTRON_VERSION } from './constants';
+import { DEFAULT_ELECTRON_VERSION, DEFAULT_SAFARI_VERSION } from './constants';
 import { getTempDir } from './helpers/helpers';
 import { getChromeVersionForElectronVersion } from './infer/browsers/inferChromeVersion';
 import { getLatestFirefoxVersion } from './infer/browsers/inferFirefoxVersion';
@@ -232,6 +232,7 @@ describe('Browser version retrieval', () => {
   test('get latest safari version', async () => {
     const safariVersion = await getLatestSafariVersion();
 
-    expect(safariVersion.majorVersion).toBeGreaterThanOrEqual(14);
+    expect(safariVersion).not.toBe(DEFAULT_SAFARI_VERSION);
+    expect(safariVersion.majorVersion).toBeGreaterThanOrEqual(26);
   });
 });
