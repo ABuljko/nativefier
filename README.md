@@ -47,8 +47,8 @@ npm ci    # also builds, via the `prepare` hook
 npm link  # puts `nativefier` on your PATH
 ```
 
-The last release published to npm by the original project is also installable
-with `npm install -g nativefier`, but it does not include the changes made here.
+`npm install -g nativefier` installs the original project's last release instead.
+It lacks the fixes made here and fails silently on Node.js 24.16–24.17 and 26.1+.
 
 Optional dependencies:
 
