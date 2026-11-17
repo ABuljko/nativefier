@@ -39,14 +39,11 @@ export async function userAgent(
     return undefined;
   }
 
-  if (
-    !Object.keys(USER_AGENT_SHORT_CODE_MAPS).includes(
-      options.nativefier.userAgent.toLowerCase(),
-    )
-  ) {
+  const shortCode = options.nativefier.userAgent.toLowerCase();
+  if (!Object.keys(USER_AGENT_SHORT_CODE_MAPS).includes(shortCode)) {
     // Real user agent got passed. No need to translate it.
     log.debug(
-      `${options.nativefier.userAgent.toLowerCase()} not found in`,
+      `${shortCode} not found in`,
       Object.keys(USER_AGENT_SHORT_CODE_MAPS),
     );
     return undefined;
@@ -59,7 +56,7 @@ export async function userAgent(
       options.packager.platform === 'mas' ? 'darwin' : options.packager.platform
     ];
 
-  const mapFunction = USER_AGENT_SHORT_CODE_MAPS[options.nativefier.userAgent];
+  const mapFunction = USER_AGENT_SHORT_CODE_MAPS[shortCode];
 
   return await mapFunction(
     userAgentPlatform,
