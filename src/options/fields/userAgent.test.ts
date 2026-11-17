@@ -88,3 +88,15 @@ test('short userAgent parameter is passed with an electronVersion', async () => 
   expect(parsedUserAgent).toContain('102.0.0');
   expect(getChromeVersionForElectronVersion).toHaveBeenCalledWith('16.0.0');
 });
+
+test('short codes are case-insensitive', async () => {
+  (getLatestFirefoxVersion as jest.Mock).mockImplementationOnce(() =>
+    Promise.resolve('100.0.0'),
+  );
+  const params = {
+    packager: { platform: 'linux' },
+    nativefier: { userAgent: 'Firefox' },
+  };
+
+  await expect(userAgent(params)).resolves.toContain('Firefox/100.0.0');
+});
