@@ -22,9 +22,6 @@
       "es2024",
       "dom"
     ],
-    // In `module` we use node20, to let tsc find the types @electron/get declares in its `exports`
-    "module": "node20",
-    "moduleResolution": "node16",
   },
   "references": [
     {
