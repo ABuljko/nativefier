@@ -285,7 +285,7 @@ After that, set your css file as follows:
 You can get an almost macOS look-alike using this:
 
 ```sh
-nativefier https://teams.microsoft.com --name 'Microsoft Teams' --counter --darwin-dark-mode-support --title-bar-style hidden --internal-urls "(.*)" --inject teamsapp.css
+nativefier https://teams.cloud.microsoft --name 'Microsoft Teams' --counter --darwin-dark-mode-support --title-bar-style hidden --internal-urls "(.*)" --inject teamsapp.css
 ```
 Note that the `--internal-urls` argument is necessary to login.
 

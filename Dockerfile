@@ -42,9 +42,9 @@ RUN npm i \
 # 2. to cache electron distributables and avoid downloads at runtime
 # Also delete generated apps so they don't get added to the Docker layer
 # !Important! The `rm -rf` command must be in the same `RUN` command (using an `&&`), to not waste Docker layer space
-RUN nativefier https://github.com/nativefier/nativefier /tmp/nativefier \
-    && nativefier -p osx https://github.com/nativefier/nativefier /tmp/nativefier \
-    && nativefier -p windows https://github.com/nativefier/nativefier /tmp/nativefier \
+RUN nativefier https://github.com/ABuljko/nativefier /tmp/nativefier \
+    && nativefier -p osx https://github.com/ABuljko/nativefier /tmp/nativefier \
+    && nativefier -p windows https://github.com/ABuljko/nativefier /tmp/nativefier \
     && rm -rf /tmp/nativefier
 
 
