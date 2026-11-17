@@ -94,7 +94,7 @@ async function checkApp(
 
   // Test global shortcuts
   if (inputOptions.globalShortcuts) {
-    let shortcutData: GlobalShortcut[] | undefined = [];
+    let shortcutData: GlobalShortcut[] | undefined;
 
     if (typeof inputOptions.globalShortcuts === 'string') {
       shortcutData = parseJson<GlobalShortcut[]>(

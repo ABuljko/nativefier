@@ -80,7 +80,6 @@ describe('Application launch', () => {
       Promise.all(consoleMessage.args().map((x) => x.jsonValue()))
         .then((args) => {
           if (consoleMessage.type() in consoleMethods) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             consoleMethods[consoleMessage.type()]('window.console', args);
           } else {
             log.log('window.console', args);

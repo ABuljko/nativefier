@@ -16,7 +16,6 @@ export function initContextMenu(
 ): void {
   log.debug('initContextMenu');
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   contextMenu({
     prepend: (actions: Actions, params: ContextMenuParams) => {
       log.debug('contextMenu.prepend', { actions, params });

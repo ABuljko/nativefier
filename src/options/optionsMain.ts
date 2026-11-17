@@ -32,7 +32,6 @@ const SEMVER_VERSION_NUMBER_REGEX = /\d+\.\d+\.\d+[-_\w\d.]*/;
 /**
  * Process and validate raw user arguments
  */
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export async function getOptions(rawOptions: RawOptions): Promise<AppOptions> {
   const options: AppOptions = {
     packager: {
