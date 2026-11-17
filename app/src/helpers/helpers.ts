@@ -299,7 +299,7 @@ export function removeUserAgentSpecifics(
   // Electron userAgentFallback is the user agent used if none is specified when creating a window.
   // For our purposes, it's useful because its format is similar enough to a real Chrome's user agent to not need
   // to infer the userAgent. userAgentFallback normally looks like this:
-  // Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) app-nativefier-804458/1.0.0 Chrome/89.0.4389.128 Electron/12.0.7 Safari/537.36
+  // Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) app-nativefier-804458/1.0.0 Chrome/152.0.7977.130 Electron/44.5.1 Safari/537.36
   // We just need to strip out the appName/1.0.0 and Electron/electronVersion
   return userAgentFallback
     .replace(`Electron/${process.versions.electron} `, '')

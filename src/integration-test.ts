@@ -182,7 +182,6 @@ describe('Nativefier upgrade', () => {
     // { platform: 'win32', arch: 'x64' },
     // { platform: 'darwin', arch: 'arm64' },
     // { platform: 'linux', arch: 'x64' },
-    // { platform: 'linux', arch: 'armv7l' },
   ])(
     'can upgrade a Nativefier app for platform/arch: %s',
     async (baseAppOptions) => {
