@@ -1,0 +1,41 @@
+name: publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  npm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Check the tag is on main
+        run: git merge-base --is-ancestor HEAD origin/main
+      - name: Use Node.js 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+      - name: Check the tag matches package.json
+        run: test "$GITHUB_REF_NAME" = "v$(node -p "require('./package.json').version")"
+      - name: Check whether this version is already on npm
+        id: npm
+        run: |
+          PACKAGE="$(node -p "require('./package.json').name")@${GITHUB_REF_NAME#v}"
+          if [ -n "$(npm view "$PACKAGE" version 2>/dev/null)" ]; then
+            echo "$PACKAGE is already on npm, skipping"
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.npm.outputs.published != 'true'
+        run: npm install -g npm@^11.5.1 # Trusted publishing needs npm >= 11.5.1
+      - if: steps.npm.outputs.published != 'true'
+        run: npm ci --no-fund --ignore-scripts # npm publish builds, via the `prepare` hook
+      - if: steps.npm.outputs.published != 'true'
+        run: npm publish

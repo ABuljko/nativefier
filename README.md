@@ -38,7 +38,16 @@ Requirements:
 - macOS 11+ / Windows 10+ / Linux, to *build* apps
   (built apps run on whatever the bundled Electron supports)
 
-Install this version from source:
+Install from npm:
+
+```bash
+npm install -g @abuljko/nativefier
+```
+
+If `nativefier` is already installed globally (the original project, or an
+`npm link` of this one), run `npm uninstall -g nativefier` first.
+
+Or install from source:
 
 ```bash
 git clone https://github.com/ABuljko/nativefier.git
@@ -46,9 +55,6 @@ cd nativefier
 npm ci    # also builds, via the `prepare` hook
 npm link  # puts `nativefier` on your PATH
 ```
-
-`npm install -g nativefier` installs the original project's last release instead.
-It lacks the fixes made here and fails silently on Node.js 24.16–24.17 and 26.1+.
 
 Optional dependencies:
 

@@ -910,14 +910,13 @@ which takes the same options as the CLI flags (camelCased) and returns a promise
 resolving with the path of the app it built.
 
 ```bash
-# install from this repository and save to package.json
-npm install --save github:ABuljko/nativefier
+npm install --save @abuljko/nativefier
 ```
 
 In your `.js` file:
 
 ```javascript
-const { buildNativefierApp } = require('nativefier');
+const { buildNativefierApp } = require('@abuljko/nativefier');
 
 buildNativefierApp({
   targetUrl: 'https://web.whatsapp.com', // the only required option
