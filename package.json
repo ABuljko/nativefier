@@ -1,5 +1,5 @@
 {
-  "name": "nativefier",
+  "name": "@abuljko/nativefier",
   "version": "53.0.0",
   "description": "Wrap web apps natively",
   "license": "MIT",
@@ -29,6 +29,9 @@
   },
   "bugs": {
     "url": "https://github.com/ABuljko/nativefier/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build-app": "cd app && webpack",

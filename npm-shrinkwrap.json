@@ -1,11 +1,11 @@
 {
-  "name": "nativefier",
+  "name": "@abuljko/nativefier",
   "version": "53.0.0",
   "lockfileVersion": 3,
   "requires": true,
   "packages": {
     "": {
-      "name": "nativefier",
+      "name": "@abuljko/nativefier",
       "version": "53.0.0",
       "license": "MIT",
       "dependencies": {
