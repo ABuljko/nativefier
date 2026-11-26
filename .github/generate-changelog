@@ -99,5 +99,6 @@ git tag -a "v$VERSION" -m "v$VERSION"
 echo
 echo 'Please verify commit & tag look fine in Git, then:'
 echo ' 1. Push:  git push --follow-tags origin main'
+echo '    The tag triggers the publish workflow, which publishes to npm. Check that it passed.'
 echo ' 2. Create a GitHub Release at https://github.com/ABuljko/nativefier/releases ,'
 echo "    using created tag v$VERSION and with title \"Nativefier v$VERSION\" (yes, with a \"v\")."

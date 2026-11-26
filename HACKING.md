@@ -131,7 +131,10 @@ npm run changelog -- $VERSION
 It bumps the version, adds the commits since the last release to `CHANGELOG.md`
 and opens it in your editor for cleanup, then commits and tags. Push, then
 create the GitHub release from the new tag, as the script reminds you.
-Nothing is published to npm or Docker Hub.
+Pushing the tag runs the `publish` workflow, which publishes
+[`@abuljko/nativefier`](https://www.npmjs.com/package/@abuljko/nativefier)
+to npm through [trusted publishing](https://docs.npmjs.com/trusted-publishers).
+Nothing is published to Docker Hub.
 
 Do follow semantic versioning, and give visibility to breaking changes
 in release notes by prefixing their line with **[BREAKING]**.
