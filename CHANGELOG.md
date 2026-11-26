@@ -1,3 +1,25 @@
+53.0.0 / 2026-11-26
+===================
+  **[BREAKING]**
+  * Bump default Electron from 25 to 44 (#15)
+  * Require Node.js >= 22.12 and npm >= 10.9, up from Node.js >= 16.16 (#6, #15)
+
+  * Refresh stale upstream leftovers (#25)
+  * Upgrade lint and build tooling (#24)
+  * Accept user agent short codes in any letter case (#23)
+  * Warn that the npm release fails on newer Node (#22)
+  * Remove dead code and simplify random suffixes (#21)
+  * Fix safari lookup and url normalization (#20)
+  * Fix app navigation and chromium switches (#19)
+  * Fix releases and trim docs (#18)
+  * Repoint links from archived upstream (#17)
+  * Fix electron 44 follow ups (#16)
+  * Refresh docs for fork (#13)
+  * Block uppercase percent escapes (#10)
+  * Code update cleanup (#7)
+  * Point CI at main (#8)
+  * Update GitHub Actions to fix CI cache failure (#6)
+  * Update dependencies and vendor the gitcloud client (#4)
 
 52.0.0 / 2023-08-25
 ===================
