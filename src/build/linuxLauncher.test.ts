@@ -108,8 +108,10 @@ describe('writeLinuxLauncher', () => {
   } as AppOptions;
   const desktopFileName = 'trello-nativefier-679e8e.desktop';
 
-  async function makeApp(withIcon: boolean): Promise<string> {
-    const appPath = getTempDir('linuxLauncher');
+  async function makeApp(
+    withIcon: boolean,
+    appPath = getTempDir('linuxLauncher'),
+  ): Promise<string> {
     await fs.outputFile(path.join(appPath, 'Trello'), '');
     if (withIcon) {
       await fs.outputFile(
@@ -149,25 +151,33 @@ describe('writeLinuxLauncher', () => {
   });
 
   test('it writes absolute paths for a relative app path', async () => {
-    const appPath = await makeApp(true);
-    const relativeAppPath = path.relative(process.cwd(), appPath);
-    expect(path.isAbsolute(relativeAppPath)).toBe(false);
-
-    await writeLinuxLauncher(relativeAppPath, options);
-
-    const entry = await fs.readFile(
-      path.join(appPath, desktopFileName),
-      'utf8',
+    // Under the working dir: on Windows CI the temp dir is on another drive,
+    // and Jest's process.chdir doesn't reach path.resolve
+    const scratchDir = path.join('node_modules', '.cache');
+    await fs.ensureDir(scratchDir);
+    const relativeAppPath = await fs.mkdtemp(
+      path.join(scratchDir, 'linuxLauncher-'),
     );
-    // Exec is escaped twice (quoting, then string escaping), Icon once
-    const unescape = (value: string): string => value.replace(/\\\\/g, '\\');
-    const exec = unescape(unescape(/^Exec="(.*)"$/m.exec(entry)?.[1] ?? ''));
-    const icon = unescape(/^Icon=(.*)$/m.exec(entry)?.[1] ?? '');
-    expect(path.relative(path.join(appPath, 'Trello'), exec)).toBe('');
-    expect(
-      path.relative(path.join(appPath, 'resources', 'app', 'icon.png'), icon),
-    ).toBe('');
-    expect(path.isAbsolute(exec) && path.isAbsolute(icon)).toBe(true);
+    try {
+      await makeApp(true, relativeAppPath);
+
+      await writeLinuxLauncher(relativeAppPath, options);
+
+      const appPath = path.resolve(relativeAppPath);
+      expect(
+        await fs.readFile(path.join(appPath, desktopFileName), 'utf8'),
+      ).toBe(
+        generateDesktopEntry({
+          name: 'Trello',
+          url: 'https://trello.com',
+          exePath: path.join(appPath, 'Trello'),
+          iconPath: path.join(appPath, 'resources', 'app', 'icon.png'),
+          desktopName: 'trello-nativefier-679e8e',
+        }),
+      );
+    } finally {
+      await fs.remove(relativeAppPath);
+    }
   });
 
   test('it refuses to point at an executable that does not exist', async () => {
