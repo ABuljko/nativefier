@@ -14,6 +14,7 @@ import {
 import { useOldAppOptions, findUpgradeApp } from '../helpers/upgrade/upgrade';
 import { AppOptions, RawOptions } from '../../shared/src/options/model';
 import { getOptions } from '../options/optionsMain';
+import { LAUNCHER_README_FILENAME, writeLinuxLauncher } from './linuxLauncher';
 import { prepareElectronApp } from './prepareElectronApp';
 
 const OPTIONS_REQUIRING_WINDOWS_FOR_WINDOWS_BUILD = [
@@ -152,11 +153,14 @@ async function assertOfficialBuildExists(options: AppOptions): Promise<void> {
   }
 }
 
-function getOSRunHelp(platform?: string): string {
+function getOSRunHelp(platform?: string, launcherWritten = false): string {
   if (platform === 'win32') {
     return `the contained .exe file.`;
   } else if (platform === 'linux') {
-    return `the contained executable file (prefixing with ./ if necessary)\nMenu/desktop shortcuts are up to you, because Nativefier cannot know where you're going to move the app. Search for "linux .desktop file" for help, or see https://wiki.archlinux.org/index.php/Desktop_entries`;
+    const launcherHelp = launcherWritten
+      ? `see ${LAUNCHER_README_FILENAME} in the app folder`
+      : 'see https://wiki.archlinux.org/title/Desktop_entries';
+    return `the contained executable file (prefixing with ./ if necessary)\nTo add it to your application menu, ${launcherHelp}.`;
   } else if (platform === 'darwin') {
     return `the app bundle.`;
   }
@@ -287,7 +291,17 @@ export async function buildNativefierApp(
     appPath = finalOutDirectory;
   }
 
-  const osRunHelp = getOSRunHelp(options.packager.platform);
+  let launcherWritten = false;
+  if (options.packager.platform === 'linux') {
+    try {
+      await writeLinuxLauncher(appPath, options);
+      launcherWritten = true;
+    } catch (err: unknown) {
+      log.warn('Failed to write the .desktop launcher, skipping.', err);
+    }
+  }
+
+  const osRunHelp = getOSRunHelp(options.packager.platform, launcherWritten);
   log.info(
     `App built to ${appPath}, move to wherever it makes sense for you and run ${osRunHelp}`,
   );

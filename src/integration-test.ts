@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
+import { LAUNCHER_README_FILENAME } from './build/linuxLauncher';
 import { DEFAULT_ELECTRON_VERSION, DEFAULT_SAFARI_VERSION } from './constants';
 import { getTempDir } from './helpers/helpers';
 import { getChromeVersionForElectronVersion } from './infer/browsers/inferChromeVersion';
@@ -13,6 +14,7 @@ import { userAgent } from './options/fields/userAgent';
 import {
   GlobalShortcut,
   NativefierOptions,
+  PackageJSON,
   RawOptions,
 } from '../shared/src/options/model';
 import { parseJson } from './utils/parseUtils';
@@ -61,6 +63,23 @@ async function checkApp(
   const iconPath = path.join(appPath, iconFile);
   expect(fs.existsSync(iconPath)).toEqual(true);
   expect(fs.statSync(iconPath).size).toBeGreaterThan(1000);
+
+  // Test Linux launcher matching the app window
+  if (inputOptions.platform === 'linux') {
+    const packageJson = parseJson<PackageJSON>(
+      fs.readFileSync(path.join(appPath, 'package.json')).toString(),
+    );
+    expect(packageJson?.desktopName).toBe(`${packageJson?.name}.desktop`);
+    const desktopEntry = fs.readFileSync(
+      path.join(appRoot, packageJson?.desktopName as string),
+      'utf8',
+    );
+    expect(desktopEntry).toContain(`StartupWMClass=${packageJson?.name}\n`);
+    expect(desktopEntry).toContain(`Icon=${iconPath.replace(/\\/g, '\\\\')}\n`);
+    expect(fs.existsSync(path.join(appRoot, LAUNCHER_README_FILENAME))).toBe(
+      true,
+    );
+  }
 
   // Test arch
   if (inputOptions.arch !== undefined) {

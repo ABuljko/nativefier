@@ -125,6 +125,7 @@ export type OutputOptions = NativefierOptions & {
 
 export type PackageJSON = {
   name: string;
+  desktopName?: string;
 };
 
 export type RawOptions = {
