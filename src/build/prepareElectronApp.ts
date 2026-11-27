@@ -165,6 +165,9 @@ function changeAppPackageJsonName(
   }
   const normalizedAppName = normalizeAppName(name, url);
   packageJson.name = normalizedAppName;
+  // Electron's own fallback slug may differ, and it must match the launcher
+  // written by writeLinuxLauncher for the window to group under it
+  packageJson.desktopName = `${normalizedAppName}.desktop`;
   log.debug(`Updating ${packageJsonPath} 'name' field to ${normalizedAppName}`);
 
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
